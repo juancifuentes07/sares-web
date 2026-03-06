@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SARES - Simulación de Mejora Académica</title>
+</head>
+<body>
+
+<h2>Simulación de Mejora Académica</h2>
+
+<label>Nota del primer corte:</label>
+<input type="number" id="nota" step="0.1" min="1" max="5">
+
+<button onclick="simular()">Simular mejora</button>
+
+<h3 id="resultado"></h3>
+
+<script>
+
+async function simular() {
+
+    const nota = document.getElementById("nota").value;
+
+    const response = await fetch("/simular-mejora", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nota_corte1: parseFloat(nota)
+        })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("resultado").innerText =
+        "Nota final estimada: " + data.nota_final_estimada +
+        " | Iteraciones necesarias: " + data.iteraciones;
+}
+
+</script>
+
+</body>
+</html>

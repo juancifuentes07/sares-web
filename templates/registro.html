@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Registro de Estudiante - SARES</title>
+</head>
+
+<body>
+
+<h2>Registro de Estudiante</h2>
+
+<input id="nombre" placeholder="Nombre"><br><br>
+<input id="apellido" placeholder="Apellido"><br><br>
+<input id="documento" placeholder="Documento"><br><br>
+<input id="carrera" placeholder="Carrera"><br><br>
+<input id="semestre" type="number" min="1" max="10" placeholder="Semestre"><br><br>
+
+<button onclick="registrar()">Registrar</button>
+
+<h3 id="resultado"></h3>
+
+<script>
+
+async function registrar(){
+
+const data = {
+nombre: document.getElementById("nombre").value,
+apellido: document.getElementById("apellido").value,
+documento: document.getElementById("documento").value,
+carrera: document.getElementById("carrera").value,
+semestre: parseInt(document.getElementById("semestre").value)
+};
+
+const response = await fetch("/estudiantes",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify(data)
+});
+
+const resultado = await response.json();
+
+document.getElementById("resultado").innerText = JSON.stringify(resultado);
+
+}
+
+</script>
+
+</body>
+</html>
