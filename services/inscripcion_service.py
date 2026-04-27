@@ -8,7 +8,7 @@ def registrar_inscripcion(data):
     materia_id = data.get("materia_id")
 
     if not all([estudiante_id, materia_id]):
-        raise APIError ("Faltan datos", 400)
+        return {"error": "Faltan datos"}, 400
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -17,13 +17,13 @@ def registrar_inscripcion(data):
     cursor.execute("SELECT id FROM estudiantes WHERE id = ?", (estudiante_id,))
     if not cursor.fetchone():
         conn.close()
-        raise APIError ("El estudiante no existe", 404)
+        return {"error": "El estudiante no existe"}, 404
 
     # 🔎 Verificar que la materia exista
     cursor.execute("SELECT id FROM materias WHERE id = ?", (materia_id,))
     if not cursor.fetchone():
         conn.close()
-        raise APIError ("La materia no existe", 404)
+        return {"error": "La materia no existe"}, 404
 
     # 🔎 Verificar que no esté duplicada
     cursor.execute("""
@@ -33,7 +33,7 @@ def registrar_inscripcion(data):
 
     if cursor.fetchone():
         conn.close()
-        raise APIError ("El estudiante ya está inscrito en esta materia", 400)
+        return {"error": "El estudiante ya está inscrito en esta materia"}, 400
 
     # ✅ Insertar
     cursor.execute("""
@@ -44,7 +44,7 @@ def registrar_inscripcion(data):
     conn.commit()
     conn.close()
 
-    raise APIError ("Inscripción realizada correctamente", 201)
+    return {"mensaje": "Inscripción realizada correctamente"}, 201
 
 def listar_inscripciones():
     return obtener_inscripciones(), 200
@@ -63,9 +63,9 @@ def actualizar_notas(inscripcion_id, data):
 
     if cursor.rowcount == 0:
         conn.close()
-        raise APIError ("Inscripción no encontrada", 404)
+        return {"error": "Inscripción no encontrada"}, 404
 
     conn.commit()
     conn.close()
 
-    raise APIError ("Notas actualizadas correctamente", 200)
+    return {"mensaje": "Notas actualizadas correctamente"}, 200

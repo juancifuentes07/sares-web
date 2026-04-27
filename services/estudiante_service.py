@@ -1,22 +1,20 @@
+import sqlite3
 from models.estudiante import crear_estudiante, obtener_estudiantes
 from models.estudiante import obtener_estudiante_por_id
 from utils.exceptions import APIError
 
-import sqlite3
-
 def registrar_estudiante(data):
-    nombre = data.get("nombre")
-    apellido = data.get("apellido")
-    documento = data.get("documento")
+    nombre = data.get("nombre").strip().title()
+    apellido = data.get("apellido").strip().title()
+    documento = data.get("documento").strip()
     carrera = data.get("carrera")
-    semestre = data.get("semestre")
 
-    if not all([nombre, apellido, documento, carrera, semestre]):
+    if not all([nombre, apellido, documento, carrera]):
         raise APIError ("Faltan datos", 400)
 
     try:
-        crear_estudiante(nombre, apellido, documento, carrera, semestre)
-        raise APIError ("Estudiante creado correctamente", 201)
+        crear_estudiante(nombre, apellido, documento, carrera)
+        return {"Estudiante creado correctamente"}, 201
 
     except sqlite3.IntegrityError:
         raise APIError ("El documento ya existe", 400)

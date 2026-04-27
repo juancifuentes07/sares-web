@@ -2,18 +2,15 @@ import sqlite3
 
 DB_NAME = "sares.db"
 
-def crear_materia(nombre, profesor_id):
+def crear_materia(nombre, carrera):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
     cursor.execute("""
-        INSERT INTO materias (nombre, profesor_id)
+        INSERT INTO materias (nombre, carrera)
         VALUES (?, ?)
-    """, (nombre, profesor_id))
-
+    """, (nombre, carrera))
     conn.commit()
     conn.close()
-
 
 def obtener_materias():
     conn = sqlite3.connect(DB_NAME)
@@ -21,9 +18,8 @@ def obtener_materias():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, nombre, carrera, semestre
+        SELECT id, nombre, carrera
         FROM materias
-        ORDER BY semestre
     """)
     
     rows = cursor.fetchall()

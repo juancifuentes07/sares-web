@@ -18,7 +18,24 @@ app.register_blueprint(materia_bp)
 
 @app.route("/proyeccion/<int:inscripcion_id>")
 def proyeccion(inscripcion_id):
-    return {"inscripcion": inscripcion_id}
+    from services.simulacion_service import simular_mejora
+    from database.init_db import get_connection 
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT nota_corte1 FROM inscripciones WHERE id = ?", (inscripcion_id,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        raise APIError("Inscripción no encontrada", 404)
+    
+    nota = row[0]
+    if nota is None:
+        raise APIError("El estudiante no tiene registrada la nota del primer corte", 400)
+    
+    resultado = simular_mejora(float(nota))
+    return jsonify(resultado), 200
 
 @app.route("/")
 def index():
@@ -109,32 +126,14 @@ def pagina_simulacion():
 def registro():
     return render_template("registro.html")
 
-@app.route("/materias", methods=["GET"])
-def obtener_materias():
-
-    conn = sqlite3.connect("sares.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT id, nombre, carrera, semestre
-        FROM materias
-        ORDER BY semestre
-    """)
-
-    materias = cursor.fetchall()
-    conn.close()
-
-    lista_materias = []
-
-    for m in materias:
-        lista_materias.append({
-            "id": m[0],
-            "nombre": m[1],
-            "carrera": m[2],
-            "semestre": m[3]
-        })
-
-    return jsonify(lista_materias)
+@app.route("/registrar_materia")
+def form_inscripcion():
+    materias = listar_materias()
+    print(materias)
+    return render_template(
+        "registrar_materia.html",
+        materias=materias
+    )
 
 if __name__ == "__main__":
     init_db()

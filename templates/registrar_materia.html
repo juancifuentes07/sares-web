@@ -5,14 +5,17 @@
 <label>ID Estudiante</label>
 <input type="number" name="estudiante_id" required>
 
-<label>Carrera</label>
-<input type="text" name="carrera" required>
-
 <label>Materia</label>
-<input type="text" name="materia" required>
+<select name="materia_id">
+    {% for materia in materias %}
+<option value="{{ materia.id }}">
+    {{ materia.nombre }}
+</option>
+{% endfor %}
+</select>
 
-<label>Semestre</label>
-<input type="number" name="semestre" min="1" max="10" required>
+<label for="carrera">Carrera</label>
+<input type="text" name="carrera" required>
 
 <button type="submit">Guardar</button>
 

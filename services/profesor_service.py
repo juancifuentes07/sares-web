@@ -6,10 +6,10 @@ def registrar_profesor(data):
     apellido = data.get("apellido")
 
     if not all([nombre, apellido]):
-        raise APIError ("Faltan datos", 400)
+        return {"error": "Faltan datos"}, 400
 
     crear_profesor(nombre, apellido)
-    raise APIError ("Profesor creado correctamente", 201)
+    return {"mensaje": "Profesor creado correctamente"}, 201
 
 
 def listar_profesores():
