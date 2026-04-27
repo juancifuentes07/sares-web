@@ -128,7 +128,7 @@ def registro():
 
 @app.route("/registrar_materia")
 def form_inscripcion():
-    materias = listar_materias()
+    materias, _ = listar_materias()
     print(materias)
     return render_template(
         "registrar_materia.html",

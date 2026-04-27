@@ -13,5 +13,5 @@ def registrar():
         registrar_materia(data)
         return "Materia registrada correctamente"
 
-    materias = listar_materias()
+    materias, _ = listar_materias()
     return render_template("registrar_materia.html", materias=materias)

@@ -1,48 +1,311 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Estudiante - SARES</title>
-</head>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2230;
+    --border: #2a3547;
+    --accent: #3ecf8e;
+    --accent-dim: rgba(62,207,142,0.12);
+    --accent-glow: rgba(62,207,142,0.25);
+    --text: #e6edf3;
+    --text-muted: #7d8fa9;
+    --error: #f85149;
+    --success: #3ecf8e;
+  }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(62,207,142,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(62,207,142,0.03) 0%, transparent 50%);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 460px;
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header { margin-bottom: 2rem; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.4rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .field { margin-bottom: 1.1rem; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.65rem 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  input::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237d8fa9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+
+  .btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.75rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .toast {
+    margin-top: 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toast.success {
+    background: rgba(62,207,142,0.1);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    display: flex;
+  }
+
+  .toast.error {
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.3);
+    color: var(--error);
+    display: flex;
+  }
+
+  .loading { display: none; }
+  .btn.loading-state .label { display: none; }
+  .btn.loading-state .loading { display: inline; }
+
+  .footer-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .footer-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .footer-link a:hover { text-decoration: underline; }
+</style>
+</head>
 <body>
 
-<h2>Registro de Estudiante</h2>
+<div class="card">
+  <div class="header">
+    <div class="badge">SARES</div>
+    <h1>Registro de<br><span>Estudiante</span></h1>
+    <p class="subtitle">Ingresa tus datos para comenzar el seguimiento académico</p>
+  </div>
 
-<input id="nombre" placeholder="Nombre"><br><br>
-<input id="apellido" placeholder="Apellido"><br><br>
-<input id="documento" placeholder="Documento"><br><br>
-<input id="carrera" placeholder="Carrera"><br><br>
+  <div class="divider"></div>
 
-<button onclick="registrar()">Registrar</button>
+  <div class="row">
+    <div class="field">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" placeholder="Ej: Juan">
+    </div>
+    <div class="field">
+      <label for="apellido">Apellido</label>
+      <input id="apellido" type="text" placeholder="Ej: Cifuentes">
+    </div>
+  </div>
 
-<h3 id="resultado"></h3>
+  <div class="field">
+    <label for="documento">Número de documento</label>
+    <input id="documento" type="text" placeholder="Ej: 1020304050" maxlength="10">
+  </div>
+
+  <div class="field">
+    <label for="carrera">Carrera</label>
+    <select id="carrera">
+      <option value="">Selecciona tu carrera</option>
+      <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+      <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+      <option value="Derecho">Derecho</option>
+      <option value="Contaduría Pública">Contaduría Pública</option>
+    </select>
+  </div>
+
+  <button class="btn" id="btnRegistrar" onclick="registrar()">
+    <span class="label">Crear cuenta</span>
+    <span class="loading">Registrando…</span>
+  </button>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="footer-link">
+    ¿Ya tienes cuenta? <a href="/simulacion">Ir a simulación →</a>
+  </div>
+</div>
 
 <script>
+async function registrar() {
+  const btn = document.getElementById('btnRegistrar');
+  const toast = document.getElementById('toast');
 
-async function registrar(){
+  const data = {
+    nombre:    document.getElementById('nombre').value.trim(),
+    apellido:  document.getElementById('apellido').value.trim(),
+    documento: document.getElementById('documento').value.trim(),
+    carrera:   document.getElementById('carrera').value
+  };
 
-const data = {
-nombre: document.getElementById("nombre").value,
-apellido: document.getElementById("apellido").value,
-documento: document.getElementById("documento").value,
-carrera: document.getElementById("carrera").value
-};
+  if (!data.nombre || !data.apellido || !data.documento || !data.carrera) {
+    showToast('Por favor completa todos los campos.', 'error');
+    return;
+  }
 
-const response = await fetch("/estudiantes",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body: JSON.stringify(data)
-});
+  btn.disabled = true;
+  btn.classList.add('loading-state');
+  toast.style.display = 'none';
 
-const resultado = await response.json();
+  try {
+    const response = await fetch('/estudiantes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
 
-document.getElementById("resultado").innerText = JSON.stringify(resultado);
+    const result = await response.json();
 
+    if (response.ok) {
+      showToast('✓ Estudiante registrado correctamente.', 'success');
+      document.getElementById('nombre').value = '';
+      document.getElementById('apellido').value = '';
+      document.getElementById('documento').value = '';
+      document.getElementById('carrera').value = '';
+    } else {
+      showToast(result.error || 'Error al registrar.', 'error');
+    }
+  } catch (e) {
+    showToast('Error de conexión con el servidor.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading-state');
+  }
 }
 
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type;
+}
 </script>
-
 </body>
 </html>

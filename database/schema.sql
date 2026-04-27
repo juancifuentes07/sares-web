@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS profesores (
 
 CREATE TABLE IF NOT EXISTS materias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
+    nombre TEXT NOT NULL UNIQUE,
     carrera TEXT NOT NULL
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS inscripciones (
     UNIQUE(estudiante_id, materia_id)
 );
 
-INSERT INTO materias (nombre, carrera) VALUES
+INSERT OR IGNORE INTO materias (nombre, carrera) VALUES
 ('Cálculo Diferencial','Ingeniería de Sistemas'),
 ('Física Mecánica','Ingeniería de Sistemas'),
 ('Introducción a la Ingeniería','Ingeniería de Sistemas'),
