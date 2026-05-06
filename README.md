@@ -5,16 +5,12 @@
 - Python
 - Flask
 - SQLite
+- pytest
+- REST API
+- HTML / CSS / JS
 
 ## Instalación
 
-git clone ...
-pip install -r requirements.txt
-python app.py
-
-## Endpoints
-
-POST /estudiantes
-GET /materias
-POST /inscripciones
-GET /proyeccion/<id>
+- git clone
+- pip install -r requirements.txt
+- python app.py
