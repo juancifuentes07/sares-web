@@ -11,6 +11,6 @@
 
 ## Instalación
 
-- git clone
+- git clone https://github.com/juancifuentes07/sares-web
 - pip install -r requirements.txt
 - python app.py
