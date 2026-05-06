@@ -239,11 +239,23 @@
         <span class="count-badge" id="countBadge">{{ materias | length }} disponibles</span>
       </div>
       <select id="materia" name="materia_id" onchange="onMateriaChange()" required>
-        <option value="">Selecciona una materia…</option>
-        {% for materia in materias %}
-        <option value="{{ materia.id }}">{{ materia.nombre }}</option>
-        {% endfor %}
-      </select>
+  <option value="">Selecciona una materia…</option>
+
+  <optgroup label="Ingeniería de Sistemas">
+    {% for materia in materias if materia.carrera == 'Ingeniería de Sistemas' %}
+    <option value="{{ materia.id }}">{{ materia.nombre }}</option>
+    {% endfor %}
+  </optgroup>
+
+  <optgroup label="Otras carreras — próximamente" disabled
+    style="color: var(--text-muted); font-style: italic;">
+    <option disabled>Ingeniería Industrial</option>
+    <option disabled>Derecho</option>
+    <option disabled>Contaduría Pública</option>
+    <option disabled>Administración de Empresas</option>
+  </optgroup>
+
+</select>
       <div class="preview" id="preview"></div>
     </div>
 

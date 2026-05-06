@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS estudiantes (
     nombre TEXT NOT NULL,
     apellido TEXT NOT NULL,
     documento TEXT NOT NULL UNIQUE,
-    carrera TEXT NOT NULL
+    carrera TEXT NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS profesores (
@@ -26,13 +26,12 @@ CREATE TABLE IF NOT EXISTS inscripciones (
 
     FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id) ON DELETE CASCADE,
     FOREIGN KEY (materia_id) REFERENCES materias(id) ON DELETE CASCADE,
-
     UNIQUE(estudiante_id, materia_id)
 );
 
 INSERT OR IGNORE INTO materias (nombre, carrera) VALUES
 ('Cálculo Diferencial','Ingeniería de Sistemas'),
-('Física Mecánica','Ingeniería de Sistemas'),
+('Física Mecánica','Ingeniería de Sistemas'),   
 ('Introducción a la Ingeniería','Ingeniería de Sistemas'),
 ('Lógica y Algoritmos','Ingeniería de Sistemas'),
 ('Lógica Matemática','Ingeniería de Sistemas'),

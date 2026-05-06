@@ -39,7 +39,7 @@ def proyeccion(inscripcion_id):
 
 @app.route("/")
 def index():
-    return "SARES"
+    return render_template("index.html")
 
 @app.route("/estudiantes", methods=["POST"])
 def crear_estudiante():
@@ -129,12 +129,11 @@ def registro():
 @app.route("/registrar_materia")
 def form_inscripcion():
     materias, _ = listar_materias()
-    print(materias)
     return render_template(
         "registrar_materia.html",
         materias=materias
     )
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     init_db()
     app.run(debug=True)

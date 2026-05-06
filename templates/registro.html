@@ -232,15 +232,31 @@
   </div>
 
   <div class="field">
-    <label for="carrera">Carrera</label>
-    <select id="carrera">
-      <option value="">Selecciona tu carrera</option>
-      <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
-      <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-      <option value="Derecho">Derecho</option>
-      <option value="Contaduría Pública">Contaduría Pública</option>
-    </select>
+  <label for="carrera">Carrera</label>
+  <select id="carrera" onchange="filtrarMaterias()">
+    <option value="">Selecciona una carrera…</option>
+    <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+    <option value="Ingeniería Industrial" disabled>Ingeniería Industrial — próximamente</option>
+    <option value="Derecho" disabled>Derecho — próximamente</option>
+    <option value="Contaduría Pública" disabled>Contaduría Pública — próximamente</option>
+  </select>
+</div>
+
+<div class="field" id="campoMateria" style="display:none;">
+  <div class="select-meta">
+    <label for="materia">Materia</label>
+    <span class="count-badge" id="countBadge">0 disponibles</span>
   </div>
+  <select id="materia" name="materia_id" onchange="onMateriaChange()" required>
+    <option value="">Selecciona una materia…</option>
+    {% for materia in materias %}
+    <option value="{{ materia.id }}" data-carrera="{{ materia.carrera }}">
+      {{ materia.nombre }}
+    </option>
+    {% endfor %}
+  </select>
+  <div class="preview" id="preview"></div>
+</div>
 
   <button class="btn" id="btnRegistrar" onclick="registrar()">
     <span class="label">Crear cuenta</span>
@@ -305,6 +321,33 @@ function showToast(msg, type) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.className = 'toast ' + type;
+}
+
+function filtrarMaterias() {
+  const carrera = document.getElementById('carrera').value;
+  const campo = document.getElementById('campoMateria');
+  const select = document.getElementById('materia');
+  const badge = document.getElementById('countBadge');
+
+  if (!carrera) {
+    campo.style.display = 'none';
+    return;
+  }
+
+  // Mostrar/ocultar opciones según carrera
+  let count = 0;
+  Array.from(select.options).forEach(opt => {
+    if (!opt.value) return; // placeholder
+    const visible = opt.dataset.carrera === carrera;
+    opt.style.display = visible ? '' : 'none';
+    opt.disabled = !visible;
+    if (visible) count++;
+  });
+
+  select.value = '';
+  document.getElementById('preview').classList.remove('visible');
+  badge.textContent = count + ' disponibles';
+  campo.style.display = 'block';
 }
 </script>
 </body>

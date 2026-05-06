@@ -256,8 +256,22 @@
 
 <div class="wrapper">
   <div class="card">
-    <div class="badge">Módulo de Simulación</div>
-    <h1>Proyección de <span>mejora académica</span></h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+  <div class="badge" style="margin-bottom:0;">Módulo de Simulación</div>
+  <a href="/" style="
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: color 0.2s, border-color 0.2s;
+  " onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+     onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">
+    ← Inicio
+  </a>
+</div>
+<h1>Proyección de <span>mejora académica</span></h1>
     <p class="subtitle">Ingresa tu nota del primer corte y el modelo calculará tu trayectoria estimada.</p>
 
     <div class="divider"></div>
@@ -306,12 +320,38 @@
 </div>
 
 <script>
+function showError(msg) {
+  let box = document.getElementById('errorBox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'errorBox';
+    box.style.cssText = 'margin-top:1rem;padding:0.75rem 1rem;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.35);color:#f85149;font-size:0.875rem;';
+    document.querySelector('.input-group').insertAdjacentElement('afterend', box);
+  }
+  box.textContent = '⚠ ' + msg;
+  box.style.display = 'block';
+  document.getElementById('nota').style.borderColor = '#f85149';
+  document.getElementById('nota').focus();
+}
+
+function clearError() {
+  const box = document.getElementById('errorBox');
+  if (box) box.style.display = 'none';
+  document.getElementById('nota').style.borderColor = '';
+}
+
 async function simular() {
+  clearError();
   const nota = parseFloat(document.getElementById('nota').value);
   const btn = document.getElementById('btnSimular');
 
-  if (isNaN(nota) || nota < 0 || nota > 5) {
-    document.getElementById('nota').focus();
+  if (isNaN(nota) || document.getElementById('nota').value === '') {
+    showError('Por favor ingresa una nota válida.');
+    return;
+  }
+
+  if (nota < 0 || nota > 5) {
+    showError('La nota debe estar entre 0.0 y 5.0.');
     return;
   }
 
@@ -359,16 +399,20 @@ function mostrarResultados(data) {
 
 function dibujarGrafico(historial) {
   const canvas = document.getElementById('chartCanvas');
+  const wrap = canvas.parentElement;
   const ctx = canvas.getContext('2d');
 
+  // Forzar dimensiones explícitas
+  const W = wrap.clientWidth - 40; // descontando el padding
+  const H = 140;
   const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width  = rect.width * dpr;
-  canvas.height = 140 * dpr;
+
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
   ctx.scale(dpr, dpr);
 
-  const W = rect.width;
-  const H = 140;
   const pad = { top: 12, right: 16, bottom: 12, left: 36 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
@@ -381,7 +425,6 @@ function dibujarGrafico(historial) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // Grid lines
   [1, 2, 3, 4, 5].forEach(v => {
     const y = yOf(v);
     ctx.beginPath();
@@ -392,14 +435,12 @@ function dibujarGrafico(historial) {
     ctx.lineTo(W - pad.right, y);
     ctx.stroke();
     ctx.setLineDash([]);
-
     ctx.fillStyle = 'rgba(125,143,169,0.7)';
-    ctx.font = '10px DM Sans';
+    ctx.font = '10px DM Sans, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(v.toFixed(0), pad.left - 6, y + 3.5);
   });
 
-  // Área bajo la curva
   const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
   grad.addColorStop(0, 'rgba(62,207,142,0.25)');
   grad.addColorStop(1, 'rgba(62,207,142,0)');
@@ -413,7 +454,6 @@ function dibujarGrafico(historial) {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Línea principal
   ctx.beginPath();
   ctx.moveTo(xOf(0), yOf(historial[0]));
   for (let i = 1; i < n; i++) ctx.lineTo(xOf(i), yOf(historial[i]));
@@ -422,15 +462,14 @@ function dibujarGrafico(historial) {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // Punto final
   const lx = xOf(n - 1), ly = yOf(historial[n - 1]);
   ctx.beginPath();
   ctx.arc(lx, ly, 5, 0, Math.PI * 2);
   ctx.fillStyle = '#3ecf8e';
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(lx, ly, 8, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(62,207,142,0.25)';
+  ctx.arc(lx, ly, 9, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(62,207,142,0.2)';
   ctx.fill();
 }
 </script>
