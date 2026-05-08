@@ -1,64 +1,62 @@
-import sqlite3
+from database.init_db import get_connection
 
-DB_NAME = "sares.db"
-
-<<<<<<< HEAD
 def crear_estudiante(nombre, apellido, documento, carrera, password_hash):
-=======
-def crear_estudiante(nombre, apellido, documento, carrera):
->>>>>>> origin/master
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
-
     cursor.execute("""
-<<<<<<< HEAD
         INSERT INTO estudiantes (nombre, apellido, documento, carrera, password_hash)
-        VALUES (?, ?, ?, ?, ?)
-    """, (nombre, apellido, documento, carrera, password_hash))
-=======
-        INSERT INTO estudiantes (nombre, apellido, documento, carrera)
-        VALUES (?, ?, ?, ?)
-    """, (nombre, apellido, documento, carrera))
->>>>>>> origin/master
-
+        VALUES (:nombre, :apellido, :documento, :carrera, :password_hash)
+    """, {
+        "nombre": nombre,
+        "apellido": apellido,
+        "documento": documento,
+        "carrera": carrera,
+        "password_hash": password_hash
+    })
     conn.commit()
+    cursor.close()
     conn.close()
-
 
 def obtener_estudiantes():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    conn = get_connection()
     cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM estudiantes")
+    cursor.execute("SELECT id, nombre, apellido, documento, carrera FROM estudiantes")
     rows = cursor.fetchall()
-
+    cursor.close()
     conn.close()
-
-    return [dict(row) for row in rows]
+    return [{"id": r[0], "nombre": r[1], "apellido": r[2], "documento": r[3], "carrera": r[4]} for r in rows]
 
 def obtener_estudiante_por_id(estudiante_id):
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    conn = get_connection()
     cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM estudiantes WHERE id = ?", (estudiante_id,))
+    cursor.execute("SELECT id, nombre, apellido, documento, carrera FROM estudiantes WHERE id = :id", {"id": estudiante_id})
     row = cursor.fetchone()
-
+    cursor.close()
     conn.close()
-
     if row:
-        return dict(row)
+        return {"id": row[0], "nombre": row[1], "apellido": row[2], "documento": row[3], "carrera": row[4]}
+    return None
+
+def obtener_estudiante_por_documento(documento):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, nombre, apellido, documento, carrera, password_hash
+        FROM estudiantes WHERE documento = :doc
+    """, {"doc": documento})
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if row:
+        return {"id": row[0], "nombre": row[1], "apellido": row[2], "documento": row[3], "carrera": row[4], "password_hash": row[5]}
     return None
 
 def eliminar_estudiante(estudiante_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
-
-    cursor.execute("DELETE FROM estudiantes WHERE id = ?", (estudiante_id,))
-    
+    cursor.execute("DELETE FROM estudiantes WHERE id = :id", {"id": estudiante_id})
     conn.commit()
     cambios = cursor.rowcount
+    cursor.close()
     conn.close()
-
     return cambios

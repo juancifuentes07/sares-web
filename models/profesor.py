@@ -1,28 +1,38 @@
-import sqlite3
-
-DB_NAME = "sares.db"
+from database.init_db import get_connection
 
 def crear_profesor(nombre, apellido):
-    conn = sqlite3.connect(DB_NAME)
+    """Inserta un nuevo profesor en la base de datos Oracle XE"""
+    conn = get_connection()
     cursor = conn.cursor()
 
+    # 2. Oracle usa parámetros nombrados (:nombre) en lugar de '?'
     cursor.execute("""
         INSERT INTO profesores (nombre, apellido)
-        VALUES (?, ?)
-    """, (nombre, apellido))
+        VALUES (:nombre, :apellido)
+    """, {"nombre": nombre, "apellido": apellido})
 
     conn.commit()
+    cursor.close()
     conn.close()
-
 
 def obtener_profesores():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    """Recupera la lista de profesores desde Oracle"""
+    conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM profesores")
+    # 3. Consulta sobre la tabla real en Oracle
+    cursor.execute("SELECT id, nombre, apellido FROM profesores")
     rows = cursor.fetchall()
 
-    conn.close()
+    # 4. Mapeo manual a diccionario para compatibilidad con el frontend
+    profesores = []
+    for row in rows:
+        profesores.append({
+            "id": row[0],
+            "nombre": row[1],
+            "apellido": row[2]
+        })
 
-    return [dict(row) for row in rows]
+    cursor.close()
+    conn.close()
+    return profesores
