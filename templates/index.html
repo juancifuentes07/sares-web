@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SARES — Sistema de Alerta y Recuperación Estudiantil</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #2a0008;                 /* fondo rojo vino oscuro */
+  --surface: #460010;            /* tarjetas */
+  --surface2: #5c0017;           /* inputs */
+
+  --border: #a11d3a;             /* bordes rojos vivos */
+
+  --accent: #ffffff;             /* principal blanco */
+  --accent-dim: rgba(255,255,255,0.10);
+  --accent-glow: rgba(255,255,255,0.25);
+
+  --text: #ffffff;               /* texto principal */
+  --text-muted: #ffd9df;         /* blanco rosado */
+
+  --warn: #ffb347;              /* naranja elegante */
+  --success: #ffccd5;           /* rosado claro */
+  --info: #ff6b81;              /* rojo brillante */
+  --danger: #ff1744;            /* rojo intenso */
+}
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 2.5rem;
+    background: rgba(13,17,23,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(42,53,71,0.6);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+  .nav-cta {
+    background: var(--accent) !important;
+    color: #0d1117 !important;
+    font-weight: 600 !important;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(62,207,142,0.07) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -55%);
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .orb-1 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(62,207,142,0.06) 0%, transparent 70%);
+    top: 20%; left: 5%;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .orb-2 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(62,207,142,0.05) 0%, transparent 70%);
+    bottom: 20%; right: 10%;
+    animation: float 10s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.25);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(62,207,142,0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(62,207,142,0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  h1 .outline {
+    -webkit-text-stroke: 1.5px var(--accent);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+    font-weight: 300;
+  }
+
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--accent-glow);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 540px;
+    font-weight: 300;
+  }
+
+  /* ── PASOS ── */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 3rem;
+  }
+
+  .how-step {
+    background: var(--surface);
+    padding: 2rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .how-step:hover { background: var(--surface2); }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: rgba(62,207,142,0.15);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step-icon {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    font-size: 1.4rem;
+    opacity: 0.7;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── FEATURES ── */
+  .features-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 640px) { .features-layout { grid-template-columns: 1fr; } }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .feature-card:hover { border-color: rgba(62,207,142,0.35); transform: translateY(-3px); }
+
+  .feature-card.large {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media (max-width: 640px) { .feature-card.large { grid-column: span 1; grid-template-columns: 1fr; } }
+
+  .feature-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+
+  .feature-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .mini-chart {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mini-chart svg { width: 100%; height: 100%; }
+
+  .chart-tag {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* ── TECH TAGS ── */
+  .tech-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+
+  .tech-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .tech-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 4rem 2rem 6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(62,207,142,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-box h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-box p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+  .cta-links { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--accent); letter-spacing: 0.1em; }
+  .footer-text { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* ── REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">SARES</a>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#tecnologia">Tecnología</a></li>
+    <li><a href="/registro">Registrarse</a></li>
+    <li><a href="/simulacion" class="nav-cta">Simular →</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Sistema de Alerta Temprana Académica</div>
+    <h1>
+      Detecta el riesgo.<br>
+      <span class="outline">Actúa</span> a tiempo.<br>
+      <span class="accent">Aprueba.</span>
+    </h1>
+    <p class="hero-sub">
+      SARES usa <strong>modelos matemáticos</strong> para proyectar tu rendimiento académico
+      y recomendarte actividades concretas que te ayuden a recuperar tu promedio
+      antes de que sea tarde.
+    </p>
+    <div class="hero-actions">
+      <a href="/registro" class="btn-primary">Crear cuenta →</a>
+      <a href="/simulacion" class="btn-secondary">Ver simulación</a>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">46</span>
+    <span class="stat-desc">Materias disponibles</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">RK4</span>
+    <span class="stat-desc">Modelo matemático</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">70</span>
+    <span class="stat-desc">Actividades máx.</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">3.0</span>
+    <span class="stat-desc">Nota mínima para pasar</span>
+  </div>
+</div>
+
+<section id="como-funciona" class="reveal">
+  <div class="section-label">¿Cómo funciona?</div>
+  <h2 class="section-title">Tres pasos para recuperar tu nota</h2>
+  <p class="section-sub">
+    El sistema combina tu historial de notas con un modelo de crecimiento matemático
+    para calcular exactamente cuánto esfuerzo necesitas para pasar la materia.
+  </p>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <div class="step-icon">📝</div>
+      <div class="step-title">Regístrate</div>
+      <div class="step-desc">Crea tu perfil e inscribe las materias que estás cursando este semestre.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <div class="step-icon">📊</div>
+      <div class="step-title">Ingresa tu nota</div>
+      <div class="step-desc">Al finalizar el primer corte (30%), registra tu calificación en el sistema.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <div class="step-icon">🔢</div>
+      <div class="step-title">El modelo calcula</div>
+      <div class="step-desc">Runge-Kutta orden 4 proyecta tu curva de mejora y determina las iteraciones necesarias.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <div class="step-icon">✅</div>
+      <div class="step-title">Actúa</div>
+      <div class="step-desc">Recibes un número concreto de actividades extracurriculares para alcanzar el 3.0.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="reveal">
+  <div class="section-label">Características</div>
+  <h2 class="section-title">Diseñado para el estudiante en riesgo</h2>
+
+  <div class="features-layout">
+    <div class="feature-card large">
+      <div>
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Proyección con Runge-Kutta 4</div>
+        <div class="feature-desc">
+          El núcleo del sistema usa el método numérico RK4 sobre el modelo diferencial
+          <em>dy/dt = k·(5 − y)</em>, donde la nota crece hacia el máximo de 5.0
+          con una tasa ajustada según tu situación inicial. Cuanto más baja la nota,
+          mayor es el coeficiente k y más actividades se calculan.
+        </div>
+      </div>
+      <div class="mini-chart">
+        <div class="chart-tag">RK4</div>
+        <svg viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <line x1="0" y1="88" x2="260" y2="88" stroke="#2a3547" stroke-width="1"/>
+          <line x1="0" y1="66" x2="260" y2="66" stroke="#2a3547" stroke-width="1"/>
+          <line x1="0" y1="44" x2="260" y2="44" stroke="rgba(227,179,65,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+          <line x1="0" y1="22" x2="260" y2="22" stroke="#2a3547" stroke-width="1"/>
+          <text x="4" y="91" fill="#7d8fa9" font-size="8">1.0</text>
+          <text x="4" y="69" fill="#7d8fa9" font-size="8">2.0</text>
+          <text x="4" y="47" fill="#e3b341" font-size="8">3.0</text>
+          <text x="4" y="25" fill="#7d8fa9" font-size="8">4.0</text>
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3ecf8e" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#3ecf8e" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M28 88 C 60 82, 90 74, 120 62 C 150 50, 180 43, 220 38 L 220 110 L28 110 Z" fill="url(#g)"/>
+          <path d="M28 88 C 60 82, 90 74, 120 62 C 150 50, 180 43, 220 38" fill="none" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="220" cy="38" r="4" fill="#3ecf8e"/>
+          <circle cx="28" cy="88" r="3" fill="#7d8fa9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">⚠️</div>
+      <div class="feature-title">Alerta temprana</div>
+      <div class="feature-desc">Si tu nota proyectada no alcanza el 3.0 incluso con las actividades máximas, el sistema te alerta para que busques apoyo adicional a tiempo.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title">Por materia</div>
+      <div class="feature-desc">Gestiona múltiples materias. Cada inscripción tiene su propio seguimiento independiente de notas y proyección.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <div class="feature-title">API REST</div>
+      <div class="feature-desc">Toda la lógica está expuesta como una API, lista para integrarse con otros sistemas académicos o aplicaciones móviles.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🧪</div>
+      <div class="feature-title">60 pruebas automatizadas</div>
+      <div class="feature-desc">Validado con una suite completa de pruebas unitarias e integración usando pytest — el modelo matemático y los endpoints verificados.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="tecnologia" class="reveal">
+  <div class="section-label">Stack tecnológico</div>
+  <h2 class="section-title">Construido con tecnología moderna</h2>
+  <p class="section-sub">
+    Desarrollado como proyecto académico en la Universidad Libre, Bogotá,
+    con herramientas del ecosistema Python de producción.
+  </p>
+  <div class="tech-grid">
+    <span class="tech-tag">Python 3.11</span>
+    <span class="tech-tag">Flask</span>
+    <span class="tech-tag">SQLite</span>
+    <span class="tech-tag">Runge-Kutta 4</span>
+    <span class="tech-tag">pytest</span>
+    <span class="tech-tag">REST API</span>
+    <span class="tech-tag">Jinja2</span>
+    <span class="tech-tag">HTML / CSS / JS</span>
+    <span class="tech-tag">Universidad Libre · Bogotá</span>
+  </div>
+</section>
+
+<div class="cta-section reveal">
+  <div class="cta-box">
+    <h2>¿Estás en riesgo académico?</h2>
+    <p>Ingresa tu nota y descubre cuántas actividades necesitas para pasar tu materia.</p>
+    <div class="cta-links">
+      <a href="/registro" class="btn-primary">Crear cuenta →</a>
+      <a href="/simulacion" class="btn-secondary">Probar simulación</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">SARES</span>
+  <span class="footer-text">Sistema de Alerta y Recuperación Estudiantil · Universidad Libre · Bogotá</span>
+  <span class="footer-text">Ingeniería de Sistemas</span>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) { el.target.classList.add('visible'); observer.unobserve(el.target); }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

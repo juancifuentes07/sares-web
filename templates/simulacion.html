@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulación de Mejora - SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+  --bg: #140708;                  /* fondo negro rojizo */
+  --surface: #2a0d10;            /* tarjeta rojo oscuro */
+  --surface2: #8b2020;           /* input rojo principal */
+
+  --border: #b82222;             /* bordes fuertes */
+
+  --accent: #fff0f0;             /* blanco rojizo */
+  --accent-dim: rgba(255,240,240,0.12);
+  --accent-glow: rgba(184,34,34,0.28);
+
+  --text: #ffffff;               /* texto blanco */
+  --text-muted: #f5b7b7;         /* rojo claro suave */
+
+  --error: #ff1003;              /* rojo alerta */
+  --warn: #ffffff;               /* blanco */
+  --warn-dim: rgba(255,255,255,0.10);
+
+  --success: #ffd6d6;            /* rosado claro */
+  --info: #ff7b7b;               /* rojo pastel */
+}
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(62,207,142,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(62,207,142,0.03) 0%, transparent 50%);
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 680px;
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.4rem; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .input-group {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .field { flex: 1; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 0.65rem 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .btn {
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.72rem 1.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Resultados */
+  .results { display: none; }
+  .results.visible { display: block; animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .stat.highlight {
+    background: var(--accent-dim);
+    border-color: rgba(62,207,142,0.3);
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .stat.highlight .stat-value { color: var(--accent); }
+
+  .stat-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* Alerta de riesgo */
+  .alert {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .alert.warn {
+    background: var(--warn-dim);
+    border: 1px solid rgba(227,179,65,0.3);
+    color: var(--warn);
+  }
+
+  .alert.ok {
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+  }
+
+  /* Gráfico */
+  .chart-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+  }
+
+  .chart-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    overflow: hidden;
+  }
+
+  canvas { width: 100% !important; height: 140px !important; display: block; }
+
+  .chart-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+  <div class="badge" style="margin-bottom:0;">Módulo de Simulación</div>
+  <a href="/" style="
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: color 0.2s, border-color 0.2s;
+  " onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+     onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">
+    ← Inicio
+  </a>
+</div>
+<h1>Proyección de <span>mejora académica</span></h1>
+    <p class="subtitle">Ingresa tu nota del primer corte y el modelo calculará tu trayectoria estimada.</p>
+
+    <div class="divider"></div>
+
+    <div class="input-group">
+      <div class="field">
+        <label for="nota">Nota del primer corte (0.0 – 5.0)</label>
+        <input type="number" id="nota" step="0.1" min="0" max="5" placeholder="3.5">
+      </div>
+      <button class="btn" id="btnSimular" onclick="simular()">Simular →</button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <div class="alert" id="alertBox"></div>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-label">Nota inicial</div>
+          <div class="stat-value" id="statInicial">—</div>
+          <div class="stat-sub">Primer corte</div>
+        </div>
+        <div class="stat highlight">
+          <div class="stat-label">Nota estimada</div>
+          <div class="stat-value" id="statFinal">—</div>
+          <div class="stat-sub">Al final del semestre</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Actividades</div>
+          <div class="stat-value" id="statIter">—</div>
+          <div class="stat-sub">Recomendadas</div>
+        </div>
+      </div>
+
+      <div class="chart-label">Progresión estimada</div>
+      <div class="chart-wrap">
+        <canvas id="chartCanvas"></canvas>
+        <div class="chart-axis">
+          <span>Inicio</span>
+          <span id="axisEnd">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showError(msg) {
+  let box = document.getElementById('errorBox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'errorBox';
+    box.style.cssText = 'margin-top:1rem;padding:0.75rem 1rem;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.35);color:#f85149;font-size:0.875rem;';
+    document.querySelector('.input-group').insertAdjacentElement('afterend', box);
+  }
+  box.textContent = '⚠ ' + msg;
+  box.style.display = 'block';
+  document.getElementById('nota').style.borderColor = '#f85149';
+  document.getElementById('nota').focus();
+}
+
+function clearError() {
+  const box = document.getElementById('errorBox');
+  if (box) box.style.display = 'none';
+  document.getElementById('nota').style.borderColor = '';
+}
+
+async function simular() {
+  clearError();
+  const nota = parseFloat(document.getElementById('nota').value);
+  const btn = document.getElementById('btnSimular');
+
+  if (isNaN(nota) || document.getElementById('nota').value === '') {
+    showError('Por favor ingresa una nota válida.');
+    return;
+  }
+
+  if (nota < 0 || nota > 5) {
+    showError('La nota debe estar entre 0.0 y 5.0.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const response = await fetch('/simular-mejora', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nota_corte1: nota })
+    });
+
+    const data = await response.json();
+    mostrarResultados(data);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Simular →';
+  }
+}
+
+function mostrarResultados(data) {
+  document.getElementById('statInicial').textContent = data.nota_inicial.toFixed(1);
+  document.getElementById('statFinal').textContent   = data.nota_final_estimada.toFixed(2);
+  document.getElementById('statIter').textContent    = data.iteraciones;
+  document.getElementById('axisEnd').textContent     = data.iteraciones + ' actividades';
+
+  const alerta = document.getElementById('alertBox');
+  if (data.nota_final_estimada >= 3.0) {
+    alerta.className = 'alert ok';
+    alerta.textContent = '✓ Con las actividades recomendadas, es posible superar la materia.';
+  } else {
+    alerta.className = 'alert warn';
+    alerta.textContent = '⚠ La nota estimada sigue siendo de riesgo. Se recomienda apoyo adicional.';
+  }
+
+  dibujarGrafico(data.historial);
+
+  const results = document.getElementById('results');
+  results.classList.add('visible');
+  results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function dibujarGrafico(historial) {
+  const canvas = document.getElementById('chartCanvas');
+  const wrap = canvas.parentElement;
+  const ctx = canvas.getContext('2d');
+
+  // Forzar dimensiones explícitas
+  const W = wrap.clientWidth - 40; // descontando el padding
+  const H = 140;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  const pad = { top: 12, right: 16, bottom: 12, left: 36 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  const min = 0, max = 5;
+  const n = historial.length;
+
+  const xOf = i => pad.left + (i / (n - 1)) * chartW;
+  const yOf = v => pad.top + chartH - ((v - min) / (max - min)) * chartH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  [1, 2, 3, 4, 5].forEach(v => {
+    const y = yOf(v);
+    ctx.beginPath();
+    ctx.strokeStyle = v === 3 ? 'rgba(227,179,65,0.25)' : 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = v === 3 ? 1.5 : 1;
+    ctx.setLineDash(v === 3 ? [4, 4] : []);
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(W - pad.right, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(125,143,169,0.7)';
+    ctx.font = '10px DM Sans, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(0), pad.left - 6, y + 3.5);
+  });
+
+  const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+  grad.addColorStop(0, 'rgba(62,207,142,0.25)');
+  grad.addColorStop(1, 'rgba(62,207,142,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(historial[0]));
+  for (let i = 1; i < n; i++) ctx.lineTo(xOf(i), yOf(historial[i]));
+  ctx.lineTo(xOf(n - 1), H - pad.bottom);
+  ctx.lineTo(xOf(0), H - pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(historial[0]));
+  for (let i = 1; i < n; i++) ctx.lineTo(xOf(i), yOf(historial[i]));
+  ctx.strokeStyle = '#3ecf8e';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  const lx = xOf(n - 1), ly = yOf(historial[n - 1]);
+  ctx.beginPath();
+  ctx.arc(lx, ly, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#3ecf8e';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lx, ly, 9, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(62,207,142,0.2)';
+  ctx.fill();
+}
+</script>
+</body>
+</html>

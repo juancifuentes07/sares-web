@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscripción de Materia - SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2230;
+    --border: #8d2011;
+    --accent: #cf3e3e;
+    --accent-dim: rgba(62,207,142,0.12);
+    --accent-glow: rgba(253, 83, 53, 0.25);
+    --text: #e6edf3;
+    --text-muted: #7d8fa9;
+    --error: #f85149;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(62,207,142,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(62,207,142,0.03) 0%, transparent 50%);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.4rem; }
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .field { margin-bottom: 1.1rem; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.65rem 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  input::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237d8fa9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+
+  select option {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  /* Contador de materias */
+  .select-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .select-meta label { margin-bottom: 0; }
+
+  .count-badge {
+    font-size: 0.7rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  .btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.75rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .toast {
+    margin-top: 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toast.success {
+    background: rgba(62,207,142,0.1);
+    border: 1px solid rgba(62,207,142,0.3);
+    color: var(--accent);
+    display: flex;
+  }
+
+  .toast.error {
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.3);
+    color: var(--error);
+    display: flex;
+  }
+
+  /* Preview de materia seleccionada */
+  .preview {
+    background: var(--accent-dim);
+    border: 1px solid rgba(62,207,142,0.2);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+    display: none;
+  }
+
+  .preview.visible { display: block; }
+
+  .footer-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .footer-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .footer-link a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="badge">SARES</div>
+  <h1>Inscripción de <span>materia</span></h1>
+  <p class="subtitle">Asocia una materia a tu perfil para iniciar el seguimiento académico.</p>
+
+  <div class="divider"></div>
+
+  <form method="POST" onsubmit="return handleSubmit(event)">
+
+    <div class="field">
+      <label for="estudiante_id">ID de estudiante</label>
+      <input type="number" id="estudiante_id" name="estudiante_id" placeholder="Ej: 1" min="1" required>
+    </div>
+
+    <div class="field">
+      <div class="select-meta">
+        <label for="materia">Materia</label>
+        <span class="count-badge" id="countBadge">{{ materias | length }} disponibles</span>
+      </div>
+      <select id="materia" name="materia_id" onchange="onMateriaChange()" required>
+  <option value="">Selecciona una materia…</option>
+
+  <optgroup label="Ingeniería de Sistemas">
+    {% for materia in materias if materia.carrera == 'Ingeniería de Sistemas' %}
+    <option value="{{ materia.id }}">{{ materia.nombre }}</option>
+    {% endfor %}
+  </optgroup>
+
+  <optgroup label="Otras carreras — próximamente" disabled
+    style="color: var(--text-muted); font-style: italic;">
+    <option disabled>Ingeniería Industrial</option>
+    <option disabled>Derecho</option>
+    <option disabled>Contaduría Pública</option>
+    <option disabled>Administración de Empresas</option>
+  </optgroup>
+
+</select>
+      <div class="preview" id="preview"></div>
+    </div>
+
+    <button type="submit" class="btn" id="btnInscribir">Inscribir materia</button>
+  </form>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="footer-link">
+    <a href="/simulacion">← Ir a simulación</a> &nbsp;·&nbsp; <a href="/registro">Registrar estudiante</a>
+  </div>
+</div>
+
+<script>
+function onMateriaChange() {
+  const sel = document.getElementById('materia');
+  const preview = document.getElementById('preview');
+  const selected = sel.options[sel.selectedIndex];
+
+  if (sel.value) {
+    preview.textContent = '✓ Seleccionada: ' + selected.text;
+    preview.classList.add('visible');
+  } else {
+    preview.classList.remove('visible');
+  }
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type;
+}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  const btn = document.getElementById('btnInscribir');
+  const estudianteId = document.getElementById('estudiante_id').value;
+  const materiaId    = document.getElementById('materia').value;
+
+  if (!estudianteId || !materiaId) {
+    showToast('Por favor completa todos los campos.', 'error');
+    return false;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Inscribiendo…';
+
+  try {
+    const response = await fetch('/inscripciones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        estudiante_id: parseInt(estudianteId),
+        materia_id:    parseInt(materiaId)
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showToast('✓ Materia inscrita correctamente.', 'success');
+      document.getElementById('materia').value = '';
+      document.getElementById('preview').classList.remove('visible');
+    } else {
+      showToast(result.error || 'Error al inscribir.', 'error');
+    }
+  } catch (err) {
+    showToast('Error de conexión con el servidor.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Inscribir materia';
+  }
+
+  return false;
+}
+</script>
+</body>
+</html>

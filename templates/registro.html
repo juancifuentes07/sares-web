@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Estudiante - SARES</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#2b000c;
+  --surface:#3a0715;
+  --surface2:#4a0d1d;
+  --border:#7a2238;
+  --accent:#ffffff;
+  --accent-dim:rgba(255,255,255,.08);
+  --accent-glow:rgba(255,255,255,.18);
+  --text:#ffffff;
+  --text-muted:#f0d7de;
+  --error:#ffb3b3;
+  --success:#ffffff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+}
+
+.card{
+  width:100%;
+  max-width:470px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:2.3rem;
+}
+
+.header{
+  margin-bottom:1.8rem;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:30px;
+  background:var(--accent-dim);
+  color:var(--accent);
+  font-size:.72rem;
+  margin-bottom:1rem;
+}
+
+h1{
+  font-family:'Syne',sans-serif;
+  font-size:1.8rem;
+}
+
+.subtitle{
+  color:var(--text-muted);
+  font-size:.9rem;
+  margin-top:.4rem;
+}
+
+.divider{
+  height:1px;
+  background:var(--border);
+  margin:1.5rem 0;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem;
+}
+
+.field{
+  margin-bottom:1rem;
+}
+
+label{
+  display:block;
+  font-size:.8rem;
+  color:var(--text-muted);
+  margin-bottom:.45rem;
+}
+
+input,select{
+  width:100%;
+  padding:.75rem .9rem;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:white;
+  font-size:.95rem;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  border-color:white;
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+
+.checkbox-field{
+  display:flex;
+  gap:12px;
+  margin:1.1rem 0;
+  padding:1rem;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  cursor:pointer;
+}
+
+.checkbox-field input{
+  width:18px;
+  height:18px;
+  margin-top:3px;
+}
+
+.checkbox-label{
+  font-size:.78rem;
+  line-height:1.5;
+  color:var(--text-muted);
+}
+
+.btn{
+  width:100%;
+  padding:.8rem;
+  border:none;
+  border-radius:8px;
+  background:white;
+  color:#111;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Syne',sans-serif;
+  margin-top:.4rem;
+}
+
+.btn:hover{
+  opacity:.9;
+}
+
+.toast{
+  margin-top:1rem;
+  padding:.8rem;
+  border-radius:8px;
+  display:none;
+  font-size:.88rem;
+}
+
+.toast.success{
+  background:rgba(255,255,255,.08);
+  color:white;
+  display:flex;
+}
+
+.toast.error{
+  background:rgba(255,80,80,.10);
+  color:#ffb3b3;
+  display:flex;
+}
+
+.footer-link{
+  margin-top:1.5rem;
+  text-align:center;
+  font-size:.82rem;
+  color:var(--text-muted);
+}
+
+.footer-link a{
+  color:white;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <div class="badge">SARES</div>
+    <h1>Registro de Estudiante</h1>
+    <p class="subtitle">Ingresa tus datos para el sistema académico</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <form id="formRegistro" onsubmit="event.preventDefault(); registrar();">
+
+    <div class="row">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="nombre" required>
+      </div>
+
+      <div class="field">
+        <label>Apellido</label>
+        <input type="text" id="apellido" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Número de documento</label>
+      <input type="text" id="documento" maxlength="10" required>
+    </div>
+
+    <div class="field">
+      <label>Carrera</label>
+      <select id="carrera" required onchange="filtrarMaterias()">
+        <option value="">Selecciona una carrera...</option>
+        <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+      </select>
+    </div>
+
+    <!-- CAMPO MATERIA -->
+    <div class="field" id="campoMateria" style="display:none;">
+      <label>Materia</label>
+
+      <select id="materia" required>
+        <option value="">Selecciona una materia...</option>
+
+        {% for materia in materias %}
+          <option value="{{ materia.id }}" data-carrera="{{ materia.carrera }}">
+            {{ materia.nombre }}
+          </option>
+        {% endfor %}
+
+      </select>
+    </div>
+
+    <!-- CHECKBOX -->
+    <div class="checkbox-field" onclick="document.getElementById('acepta_datos').click()">
+      <input type="checkbox" id="acepta_datos" onclick="event.stopPropagation();">
+
+      <div class="checkbox-label">
+        Acepto la política de tratamiento de datos personales bajo Ley 1581 de 2012.
+      </div>
+    </div>
+
+    <button class="btn" id="btnRegistrar">Crear cuenta</button>
+
+  </form>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="footer-link">
+    ¿Ya tienes cuenta? <a href="/simulacion">Ir a simulación →</a>
+  </div>
+
+</div>
+
+<script>
+
+function filtrarMaterias(){
+    const carrera = document.getElementById("carrera").value;
+    const campo = document.getElementById("campoMateria");
+    const select = document.getElementById("materia");
+
+    if(carrera === ""){
+        campo.style.display = "none";
+        return;
+    }
+
+    campo.style.display = "block";
+
+    Array.from(select.options).forEach(op => {
+
+        if(op.value === "") return;
+
+        if(op.dataset.carrera === carrera){
+            op.hidden = false;
+            op.disabled = false;
+        }else{
+            op.hidden = true;
+            op.disabled = true;
+        }
+
+    });
+
+    select.value = "";
+}
+
+async function registrar(){
+
+    const btn = document.getElementById("btnRegistrar");
+
+    const data = {
+        nombre: document.getElementById("nombre").value.trim(),
+        apellido: document.getElementById("apellido").value.trim(),
+        documento: document.getElementById("documento").value.trim(),
+        carrera: document.getElementById("carrera").value,
+        materia_id: document.getElementById("materia").value,
+        acepta_tratamiento: document.getElementById("acepta_datos").checked
+    };
+
+    if(!data.acepta_tratamiento){
+        showToast("Debe aceptar tratamiento de datos.","error");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = "Registrando...";
+
+    try{
+
+        const response = await fetch("/estudiantes",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if(response.ok){
+            showToast("✓ Registro exitoso.","success");
+            document.getElementById("formRegistro").reset();
+            document.getElementById("campoMateria").style.display="none";
+        }else{
+            showToast(result.error || "Error en registro.","error");
+        }
+
+    }catch(e){
+        showToast("Error de conexión con servidor.","error");
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = "Crear cuenta";
+}
+
+function showToast(msg,type){
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = msg;
+    toast.className = "toast " + type;
+    toast.style.display = "flex";
+
+    setTimeout(()=>{
+        toast.style.display = "none";
+    },4000);
+}
+
+</script>
+
+</body>
+</html>
