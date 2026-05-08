@@ -257,6 +257,10 @@
   </select>
   <div class="preview" id="preview"></div>
 </div>
+<div class="field">
+  <label for="password">Contraseña</label>
+  <input id="password" type="password" placeholder="Mínimo 6 caracteres">
+</div>
 
   <button class="btn" id="btnRegistrar" onclick="registrar()">
     <span class="label">Crear cuenta</span>
@@ -279,7 +283,8 @@ async function registrar() {
     nombre:    document.getElementById('nombre').value.trim(),
     apellido:  document.getElementById('apellido').value.trim(),
     documento: document.getElementById('documento').value.trim(),
-    carrera:   document.getElementById('carrera').value
+    carrera:   document.getElementById('carrera').value,
+    password:  document.getElementById('password').value
   };
 
   if (!data.nombre || !data.apellido || !data.documento || !data.carrera) {

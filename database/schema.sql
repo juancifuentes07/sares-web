@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS estudiantes (
     apellido TEXT NOT NULL,
     documento TEXT NOT NULL UNIQUE,
     carrera TEXT NOT NULL,
+    password_hash TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS profesores (
@@ -23,7 +24,6 @@ CREATE TABLE IF NOT EXISTS inscripciones (
     estudiante_id INTEGER NOT NULL,
     materia_id INTEGER NOT NULL,
     nota_corte1 REAL DEFAULT 0,
-
     FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id) ON DELETE CASCADE,
     FOREIGN KEY (materia_id) REFERENCES materias(id) ON DELETE CASCADE,
     UNIQUE(estudiante_id, materia_id)

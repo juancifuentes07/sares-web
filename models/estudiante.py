@@ -2,14 +2,14 @@ import sqlite3
 
 DB_NAME = "sares.db"
 
-def crear_estudiante(nombre, apellido, documento, carrera):
+def crear_estudiante(nombre, apellido, documento, carrera, password_hash):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO estudiantes (nombre, apellido, documento, carrera)
-        VALUES (?, ?, ?, ?)
-    """, (nombre, apellido, documento, carrera))
+        INSERT INTO estudiantes (nombre, apellido, documento, carrera, password_hash)
+        VALUES (?, ?, ?, ?, ?)
+    """, (nombre, apellido, documento, carrera, password_hash))
 
     conn.commit()
     conn.close()
