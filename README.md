@@ -4,7 +4,7 @@
 
 - Python
 - Flask
-- SQLite
+- Oracle SQL
 - pytest
 - REST API
 - HTML / CSS / JS
