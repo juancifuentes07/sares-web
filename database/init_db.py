@@ -1,13 +1,24 @@
 import oracledb
 from config import Config
 
+_pool = None
+
+def get_pool():
+    global _pool
+    if _pool is None:
+        _pool = oracledb.create_pool(
+            user=Config.USUARIO,
+            password=Config.PASSWORD,
+            dsn=f"{Config.HOST}:{Config.PUERTO}/{Config.SERVICIO}",
+            min=5,
+            max=20,
+            increment=2
+        )
+    return _pool
+
 def get_connection():
     # Usa la configuración que guardaste en config.py
-    return oracledb.connect(
-        user=Config.USUARIO,
-        password=Config.PASSWORD,
-        dsn=f"{Config.HOST}:{Config.PUERTO}/{Config.SERVICIO}"
-    )
+    return get_pool().acquire()
 
 def init_db():
     conn = get_connection()
@@ -18,6 +29,8 @@ def init_db():
         for command in sql_commands:
             if command.strip():
                 cursor.execute(command)
+                pass
+            
     conn.commit()
     cursor.close()
     conn.close()

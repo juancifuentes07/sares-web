@@ -461,8 +461,8 @@ nav {
       {% if m.proyeccion %}
         {% set pct = (m.proyeccion.nota_final_estimada / 5.0 * 100) %}
         <div class="progress-wrap">
-          <div class="progress-bar {% if m.proyeccion.nota_final_estimada >= 3.0 %}ok{% elif m.proyeccion.nota_final_estimada >= 2.0 %}warn{% else %}bad{% endif %}"
-               style="width: {{ [pct, 100] | min }}%">
+          <div class="progress-bar {% if m.proyeccion.nota_final_estimada >= 3.0 %}ok{% elif m.proyeccion.nota_final_estimada >= 2.0 %}warn{% else %}bad{% endif %}" 
+            style="width: {{ [pct, 100] | min }}%">
           </div>
         </div>
       {% else %}
