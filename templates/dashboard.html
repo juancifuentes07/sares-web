@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #2b000c;
+  --surface: #3a0715;
+  --surface2: #4a0d1d;
+  --border: #7a2238;
+  --accent: #ffffff;
+  --accent-dim: rgba(255,255,255,.08);
+  --accent-glow: rgba(255,255,255,.18);
+  --text: #ffffff;
+  --text-muted: #f0d7de;
+  --error: #ffb3b3;
+  --warn: #ffb347;
+  --success: #a8f0c6;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(42,0,12,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+
+.nav-user { display: flex; align-items: center; gap: 0.6rem; font-size: 0.875rem; color: var(--text-muted); }
+
+.user-avatar {
+  width: 32px; height: 32px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+/* ── LAYOUT ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+/* ── HEADER ── */
+.page-header {
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.greeting {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.page-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.4rem; }
+
+/* ── SUMMARY ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+@media (max-width: 640px) { .summary-grid { grid-template-columns: 1fr; } }
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.summary-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.5rem;
+}
+
+.summary-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: white;
+}
+
+.summary-card.ok   .summary-value { color: var(--success); }
+.summary-card.warn .summary-value { color: var(--warn); }
+.summary-card.bad  .summary-value { color: var(--error); }
+
+.summary-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+/* ── ACTIONS ── */
+.actions-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  animation: fadeUp 0.5s 0.05s ease both;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: #111;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.65rem 1.4rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-secondary:hover { border-color: white; background: var(--accent-dim); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.empty-state p { font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+/* ── MATERIA CARDS ── */
+.materias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+
+.materia-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.materia-card:hover { transform: translateY(-3px); }
+
+.materia-card.estable { border-color: rgba(168,240,198,0.3); }
+.materia-card.estable:hover { border-color: rgba(168,240,198,0.6); }
+.materia-card.riesgo  { border-color: rgba(255,179,179,0.3); }
+.materia-card.riesgo:hover  { border-color: rgba(255,179,179,0.6); }
+
+.materia-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.materia-nombre {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  flex: 1;
+  padding-right: 0.75rem;
+}
+
+.estado-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-estable {
+  background: rgba(168,240,198,0.12);
+  border: 1px solid rgba(168,240,198,0.3);
+  color: var(--success);
+}
+
+.badge-riesgo {
+  background: rgba(255,179,179,0.12);
+  border: 1px solid rgba(255,179,179,0.3);
+  color: var(--error);
+}
+
+.badge-sin_nota {
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.materia-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mini-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.2rem;
+}
+
+.mini-stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: white;
+}
+
+.mini-stat-value.ok     { color: var(--success); }
+.mini-stat-value.warn   { color: var(--warn); }
+.mini-stat-value.bad    { color: var(--error); }
+.mini-stat-value.muted  { color: var(--text-muted); }
+
+/* Progress bar */
+.progress-wrap {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.75rem;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s cubic-bezier(0.16,1,0.3,1);
+}
+
+.progress-bar.ok   { background: var(--success); }
+.progress-bar.warn { background: var(--warn); }
+.progress-bar.bad  { background: var(--error); }
+.progress-bar.gray { background: var(--border); }
+
+.materia-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.ver-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.ver-link:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">SARES</a>
+  <div class="nav-right">
+    <div class="nav-user">
+      <div class="user-avatar" id="avatarInitial"></div>
+      <span id="navNombre"></span>
+    </div>
+    <a href="/logout" class="btn-logout">Cerrar sesión</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="greeting">Bienvenido de nuevo</div>
+    <h1>Hola, {{ nombre }} 👋</h1>
+    <p>Estado académico de tus materias este semestre.</p>
+  </div>
+
+  <!-- Summary -->
+  {% set total    = materias | length %}
+  {% set estables = materias | selectattr("estado", "eq", "estable") | list | length %}
+  {% set riesgo   = materias | selectattr("estado", "eq", "riesgo")  | list | length %}
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-label">Materias inscritas</div>
+      <div class="summary-value">{{ total }}</div>
+      <div class="summary-sub">Este semestre</div>
+    </div>
+    <div class="summary-card ok">
+      <div class="summary-label">En buen camino</div>
+      <div class="summary-value">{{ estables }}</div>
+      <div class="summary-sub">Nota proyectada ≥ 3.0</div>
+    </div>
+    <div class="summary-card bad">
+      <div class="summary-label">En riesgo</div>
+      <div class="summary-value">{{ riesgo }}</div>
+      <div class="summary-sub">Requieren atención</div>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="actions-bar">
+    <a href="/registrar_materia" class="btn-primary">+ Inscribir materia</a>
+    <a href="/simulacion" class="btn-secondary">Simulación libre</a>
+  </div>
+
+  <!-- Materias -->
+  <div class="section-label">Mis materias</div>
+
+  {% if materias %}
+  <div class="materias-grid">
+    {% for m in materias %}
+    <div class="materia-card {{ m.estado }}">
+      <div class="materia-top">
+        <div class="materia-nombre">{{ m.nombre }}</div>
+        {% if m.estado == "estable" %}
+          <span class="estado-badge badge-estable">✓ Estable</span>
+        {% elif m.estado == "riesgo" %}
+          <span class="estado-badge badge-riesgo">⚠ Riesgo</span>
+        {% else %}
+          <span class="estado-badge badge-sin_nota">Sin nota</span>
+        {% endif %}
+      </div>
+
+      <div class="materia-stats">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Nota actual</div>
+          {% if m.nota > 0 %}
+            <div class="mini-stat-value {% if m.nota >= 3.0 %}ok{% elif m.nota >= 2.0 %}warn{% else %}bad{% endif %}">
+              {{ "%.1f"|format(m.nota) }}
+            </div>
+          {% else %}
+            <div class="mini-stat-value muted">—</div>
+          {% endif %}
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-label">Nota estimada</div>
+          {% if m.proyeccion %}
+            <div class="mini-stat-value {% if m.proyeccion.nota_final_estimada >= 3.0 %}ok{% else %}bad{% endif %}">
+              {{ "%.2f"|format(m.proyeccion.nota_final_estimada) }}
+            </div>
+          {% else %}
+            <div class="mini-stat-value muted">—</div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if m.proyeccion %}
+        {% set pct = (m.proyeccion.nota_final_estimada / 5.0 * 100) %}
+        <div class="progress-wrap">
+          <div class="progress-bar {% if m.proyeccion.nota_final_estimada >= 3.0 %}ok{% elif m.proyeccion.nota_final_estimada >= 2.0 %}warn{% else %}bad{% endif %}"
+               style="width: {{ [pct, 100] | min }}%">
+          </div>
+        </div>
+      {% else %}
+        <div class="progress-wrap">
+          <div class="progress-bar gray" style="width: 0%"></div>
+        </div>
+      {% endif %}
+
+      <div class="materia-footer">
+        {% if m.proyeccion %}
+          <span>{{ m.proyeccion.iteraciones }} actividades recomendadas</span>
+        {% else %}
+          <span>Registra tu nota para ver la proyección</span>
+        {% endif %}
+        <a href="/proyeccion/{{ m.inscripcion_id }}" class="ver-link">Ver detalle →</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📚</div>
+    <h3>Aún no tienes materias inscritas</h3>
+    <p>Inscribe tus materias para comenzar el seguimiento académico.</p>
+    <a href="/registrar_materia" class="btn-primary">Inscribir primera materia</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+  const nombre = "{{ nombre }}";
+  document.getElementById('navNombre').textContent = nombre;
+  document.getElementById('avatarInitial').textContent = nombre.charAt(0).toUpperCase();
+</script>
+</body>
+</html>

@@ -219,6 +219,14 @@ select:focus{
     </div>
 
     <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="contrasena" required oninput="validarContrasena(this.value)">
+      <div id="passIndicador" style="margin-top:0.5rem; display:none;">
+        <div id="passReq" style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.4rem;"></div>
+      </div>
+    </div>
+
+    <div class="field">
       <label>Carrera</label>
       <select id="carrera" required onchange="filtrarMaterias()">
         <option value="">Selecciona una carrera...</option>
@@ -304,11 +312,27 @@ async function registrar(){
         documento: document.getElementById("documento").value.trim(),
         carrera: document.getElementById("carrera").value,
         materia_id: document.getElementById("materia").value,
-        acepta_tratamiento: document.getElementById("acepta_datos").checked
+        acepta_tratamiento: document.getElementById("acepta_datos").checked,
+        password: document.getElementById("contrasena").value
     };
 
     if(!data.acepta_tratamiento){
         showToast("Debe aceptar tratamiento de datos.","error");
+        return;
+    }
+
+    // Validar contraseña
+    const contrasena = document.getElementById("contrasena").value;
+    const erroresPass = [];
+
+    if (contrasena.length < 8)              erroresPass.push("mínimo 8 caracteres");
+    if (!/[A-Z]/.test(contrasena))          erroresPass.push("una mayúscula");
+    if (!/[a-z]/.test(contrasena))          erroresPass.push("una minúscula");
+    if (!/\d/.test(contrasena))             erroresPass.push("un número");
+    if (!/[!@#$%^&*(),.?":{}|<>\-_]/.test(contrasena)) erroresPass.push("un carácter especial");
+
+    if (erroresPass.length > 0) {
+        showToast("La contraseña requiere: " + erroresPass.join(", "), "error");
         return;
     }
 
@@ -328,9 +352,7 @@ async function registrar(){
         const result = await response.json();
 
         if(response.ok){
-            showToast("✓ Registro exitoso.","success");
-            document.getElementById("formRegistro").reset();
-            document.getElementById("campoMateria").style.display="none";
+            window.location.href = "/login";
         }else{
             showToast(result.error || "Error en registro.","error");
         }
@@ -354,6 +376,31 @@ function showToast(msg,type){
     setTimeout(()=>{
         toast.style.display = "none";
     },4000);
+}
+
+function validarContrasena(val) {
+  const indicador = document.getElementById('passIndicador');
+  const req = document.getElementById('passReq');
+  
+  if (!val) { indicador.style.display = 'none'; return; }
+  indicador.style.display = 'block';
+
+  const reglas = [
+    { texto: '8+ chars',    ok: val.length >= 8 },
+    { texto: 'Mayúscula',   ok: /[A-Z]/.test(val) },
+    { texto: 'Minúscula',   ok: /[a-z]/.test(val) },
+    { texto: 'Número',      ok: /\d/.test(val) },
+    { texto: 'Especial',    ok: /[!@#$%^&*(),.?":{}|<>\-_]/.test(val) },
+  ];
+
+  req.innerHTML = reglas.map(r => `
+    <span style="
+      font-size:0.7rem; padding:2px 8px; border-radius:20px;
+      background:${r.ok ? 'rgba(168,240,198,0.12)' : 'rgba(255,255,255,0.05)'};
+      border:1px solid ${r.ok ? 'rgba(168,240,198,0.4)' : 'rgba(255,255,255,0.15)'};
+      color:${r.ok ? '#a8f0c6' : '#f0d7de'};
+    ">${r.ok ? '✓' : '·'} ${r.texto}</span>
+  `).join('');
 }
 
 </script>

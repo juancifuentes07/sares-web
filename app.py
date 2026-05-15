@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 from config import Config  # Importamos tu configuración de Oracle
 from database.init_db import init_db, get_connection 
-from services.estudiante_service import crear_estudiante as registrar_estudiante, obtener_estudiantes as listar_estudiantes, obtener_estudiante_por_id as obtener_estudiante, eliminar_estudiante as borrar_estudiante
+from services.estudiante_service import registrar_estudiante, listar_estudiantes, obtener_estudiante, borrar_estudiante
 from services.profesor_service import registrar_profesor, listar_profesores
 from services.materia_service import registrar_materia, listar_materias
 from services.inscripcion_service import actualizar_notas, registrar_inscripcion, listar_inscripciones
 from services.simulacion_service import simular_mejora
 from utils.exceptions import APIError
 from routes.materia_routes import materia_bp
+from routes.auth_routes import auth_bp
 
 app = Flask(__name__)
 
@@ -22,7 +23,6 @@ app.json.ensure_ascii = False
 # Registro de Blueprints
 app.register_blueprint(materia_bp)
 
-from routes.auth_routes import auth_bp
 app.register_blueprint(auth_bp)
 
 # --- Rutas de Lógica Específica ---
@@ -145,6 +145,7 @@ def simular_mejora_endpoint():
         raise APIError("Debe enviar la nota del primer corte", 400)
     resultado = simular_mejora(float(nota))
     return jsonify(resultado), 200
+
 
 # --- Manejo de Errores ---
 

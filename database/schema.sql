@@ -3,7 +3,8 @@ CREATE TABLE estudiantes (
     nombre VARCHAR2(100) NOT NULL,
     apellido VARCHAR2(100) NOT NULL,
     documento VARCHAR2(50) NOT NULL UNIQUE,
-    carrera VARCHAR2(100) NOT NULL
+    carrera VARCHAR2(100) NOT NULL,
+    password_hash VARCHAR2(255) NOT NULL
 );
 
 CREATE TABLE profesores (

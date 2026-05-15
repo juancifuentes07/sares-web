@@ -3,6 +3,19 @@ import oracledb
 from werkzeug.security import generate_password_hash
 from models.estudiante import crear_estudiante, obtener_estudiantes, obtener_estudiante_por_id, eliminar_estudiante
 
+def validar_password(password):
+    if len(password) < 8:
+        return "La contraseña debe tener al menos 8 caracteres"
+    if not re.search(r"[A-Z]", password):
+        return "La contraseña debe contener al menos una letra mayúscula"
+    if not re.search(r"[a-z]", password):
+        return "La contraseña debe contener al menos una letra minúscula"
+    if not re.search(r"\d", password):
+        return "La contraseña debe contener al menos un número"
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return "La contraseña debe contener al menos un carácter especial"
+    return None
+
 def registrar_estudiante(data):
     nombre    = data.get("nombre")
     apellido  = data.get("apellido")
@@ -19,10 +32,11 @@ def registrar_estudiante(data):
     carrera   = carrera.strip().title()
 
     if not re.match(r"^\d{1,10}$", documento):
-        return {"error": "Formato de documento inválido"}, 400
+        return {"error": "Formato de documento inváli|do"}, 400
 
-    if len(password) < 6:
-        return {"error": "La contraseña debe tener al menos 6 caracteres"}, 400
+    error_password = validar_password(password)
+    if error_password:
+        return {"error": error_password}, 400
 
     password_hash = generate_password_hash(password)
 

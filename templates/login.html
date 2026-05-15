@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar Sesión — SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #2b000c;
+  --surface: #3a0715;
+  --surface2: #4a0d1d;
+  --border: #7a2238;
+  --accent: #ffffff;
+  --accent-dim: rgba(255,255,255,.08);
+  --accent-glow: rgba(255,255,255,.18);
+  --text: #ffffff;
+  --text-muted: #f0d7de;
+  --error: #ffb3b3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.left-panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  pointer-events: none;
+}
+
+.brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.panel-content { position: relative; z-index: 1; }
+
+.panel-content h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.panel-content p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 340px;
+}
+
+.features { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.feature-dot {
+  width: 6px; height: 6px;
+  background: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.panel-footer { font-size: 0.75rem; color: var(--text-muted); opacity: 0.6; }
+
+.right-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-header { margin-bottom: 2rem; }
+
+.form-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.form-header p { color: var(--text-muted); font-size: 0.875rem; }
+
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+.field { margin-bottom: 1rem; }
+
+label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus { border-color: white; box-shadow: 0 0 0 3px var(--accent-glow); }
+input.error-field { border-color: var(--error); }
+input::placeholder { color: var(--text-muted); opacity: 0.4; }
+
+.btn {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  display: none;
+  font-size: 0.88rem;
+}
+
+.toast.error { background: rgba(255,80,80,.10); color: var(--error); display: flex; }
+
+.form-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.form-footer a { color: white; text-decoration: none; font-weight: 500; }
+.form-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  body { grid-template-columns: 1fr; }
+  .left-panel { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="left-panel">
+  <a href="/" class="brand">SARES</a>
+  <div class="panel-content">
+    <h2>Tu rendimiento,<br>bajo control.</h2>
+    <p>Ingresa al sistema para ver la proyección de tus materias y las actividades recomendadas para recuperar tu promedio.</p>
+    <div class="features">
+      <div class="feature"><div class="feature-dot"></div><span>Proyección basada en Runge-Kutta 4</span></div>
+      <div class="feature"><div class="feature-dot"></div><span>Alerta temprana por materia</span></div>
+      <div class="feature"><div class="feature-dot"></div><span>Actividades recomendadas personalizadas</span></div>
+      <div class="feature"><div class="feature-dot"></div><span>Seguimiento semestre a semestre</span></div>
+    </div>
+  </div>
+  <div class="panel-footer">Universidad Libre · Ingeniería de Sistemas · Bogotá</div>
+</div>
+
+<div class="right-panel">
+  <div class="form-card">
+    <div class="form-header">
+      <h1>Iniciar sesión</h1>
+      <p>Ingresa tu número de documento y contraseña</p>
+    </div>
+    <div class="divider"></div>
+    <div class="field">
+      <label>Número de documento</label>
+      <input type="text" id="documento" placeholder="Ej: 1020304050" maxlength="10">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn" id="btnLogin" onclick="login()">
+      <span id="btnLabel">Ingresar →</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+    <div class="toast" id="toast"></div>
+    <div class="form-footer">
+      ¿No tienes cuenta? <a href="/registro">Regístrate aquí</a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function login() {
+  const documento = document.getElementById('documento').value.trim();
+  const password  = document.getElementById('password').value;
+  const btn       = document.getElementById('btnLogin');
+  const spinner   = document.getElementById('spinner');
+  const label     = document.getElementById('btnLabel');
+
+  hideToast();
+
+  if (!documento || !password) {
+    showToast('Por favor completa todos los campos.');
+    return;
+  }
+
+  btn.disabled = true;
+  label.style.display = 'none';
+  spinner.style.display = 'block';
+
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documento, password })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      showToast(data.error || 'Error al iniciar sesión.');
+    }
+  } catch (e) {
+    showToast('Error de conexión con el servidor.');
+  } finally {
+    btn.disabled = false;
+    label.style.display = 'inline';
+    spinner.style.display = 'none';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.className = 'toast error';
+  t.style.display = 'flex';
+}
+
+function hideToast() {
+  document.getElementById('toast').style.display = 'none';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
