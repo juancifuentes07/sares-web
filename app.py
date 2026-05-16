@@ -60,10 +60,8 @@ def pagina_simulacion():
 
 @app.route("/registro")
 def registro():
-    # 1. Traemos las materias de Oracle usando el servicio que ya migramos
-    materias, _ = listar_materias() 
     # 2. Las pasamos al template para que el ciclo 'for' las reconozca
-    return render_template("registro.html", materias=materias)
+    return render_template("registro.html")
 
 @app.route("/registrar_materia")
 def form_inscripcion():

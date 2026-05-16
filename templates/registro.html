@@ -228,25 +228,9 @@ select:focus{
 
     <div class="field">
       <label>Carrera</label>
-      <select id="carrera" required onchange="filtrarMaterias()">
+      <select id="carrera">
         <option value="">Selecciona una carrera...</option>
         <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
-      </select>
-    </div>
-
-    <!-- CAMPO MATERIA -->
-    <div class="field" id="campoMateria" style="display:none;">
-      <label>Materia</label>
-
-      <select id="materia" required>
-        <option value="">Selecciona una materia...</option>
-
-        {% for materia in materias %}
-          <option value="{{ materia.id }}" data-carrera="{{ materia.carrera }}">
-            {{ materia.nombre }}
-          </option>
-        {% endfor %}
-
       </select>
     </div>
 
@@ -273,35 +257,6 @@ select:focus{
 
 <script>
 
-function filtrarMaterias(){
-    const carrera = document.getElementById("carrera").value;
-    const campo = document.getElementById("campoMateria");
-    const select = document.getElementById("materia");
-
-    if(carrera === ""){
-        campo.style.display = "none";
-        return;
-    }
-
-    campo.style.display = "block";
-
-    Array.from(select.options).forEach(op => {
-
-        if(op.value === "") return;
-
-        if(op.dataset.carrera === carrera){
-            op.hidden = false;
-            op.disabled = false;
-        }else{
-            op.hidden = true;
-            op.disabled = true;
-        }
-
-    });
-
-    select.value = "";
-}
-
 async function registrar(){
 
     const btn = document.getElementById("btnRegistrar");
@@ -311,7 +266,6 @@ async function registrar(){
         apellido: document.getElementById("apellido").value.trim(),
         documento: document.getElementById("documento").value.trim(),
         carrera: document.getElementById("carrera").value,
-        materia_id: document.getElementById("materia").value,
         acepta_tratamiento: document.getElementById("acepta_datos").checked,
         password: document.getElementById("contrasena").value
     };
