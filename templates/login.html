@@ -267,7 +267,7 @@ async function login() {
   hideToast();
 
   if (!documento || !password) {
-    showToast('Por favor completa todos los campos.');
+    showToast('Por favor complete todos los campos.');
     return;
   }
 
@@ -285,10 +285,10 @@ async function login() {
     if (response.ok) {
       window.location.href = '/dashboard';
     } else {
-      showToast(data.error || 'Error al iniciar sesión.');
+      showToast(data.error || 'Usuario o contraseña incorrectos.');
     }
-  } catch (e) {
-    showToast('Error de conexión con el servidor.');
+} catch (e) {
+    showToast('Usuario no encontrado o error de conexión.');
   } finally {
     btn.disabled = false;
     label.style.display = 'inline';

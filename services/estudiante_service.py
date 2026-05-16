@@ -32,7 +32,7 @@ def registrar_estudiante(data):
     carrera   = carrera.strip().title()
 
     if not re.match(r"^\d{1,10}$", documento):
-        return {"error": "Formato de documento inváli|do"}, 400
+        return {"error": "Formato de documento inválido"}, 400
 
     error_password = validar_password(password)
     if error_password:
@@ -46,7 +46,7 @@ def registrar_estudiante(data):
     except oracledb.IntegrityError:
         return {"error": "El documento ya existe"}, 400
     except oracledb.Error as e:
-        return {"error": f"Error en la base de datos: {str(e)}"}, 500
+        return {"error": "No se puede conectar a la base de datos. Intente más tarde."}, 500
 
 def listar_estudiantes():
     return obtener_estudiantes(), 200
