@@ -313,7 +313,12 @@
           <div class="stat-sub">Recomendadas</div>
         </div>
       </div>
+<div class="accesibilidad-bar" style="position: fixed; top: 15px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
+    <button type="button" onclick="cambiarTexto(2)" style="background: #007acc; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A+</button>
+    <button type="button" onclick="cambiarTexto(-2)" style="background: #007acc; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A-</button>
+</div>
 
+<script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
       <div class="chart-label">Progresión estimada</div>
       <div class="chart-wrap">
         <canvas id="chartCanvas"></canvas>
