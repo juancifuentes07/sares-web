@@ -255,8 +255,8 @@ select:focus{
       <input type="checkbox" id="acepta_datos" onclick="event.stopPropagation();">
 
       <div class="checkbox-label">
-        Acepto la política de tratamiento de datos personales bajo Ley 1581 de 2012.
-      </div>
+      Acepto la política de <a href="{{ url_for('static', filename='ley_1581_de_2012.pdf') }}" target="_blank" onclick="event.stopPropagation();">tratamiento de datos personales</a> bajo Ley 1581 de 2012.      
+    </div>
     </div>
 
     <button class="btn" id="btnRegistrar">Crear cuenta</button>
