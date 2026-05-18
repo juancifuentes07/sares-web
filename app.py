@@ -158,4 +158,4 @@ def handle_api_error(error):
 if __name__ == "__main__":  
     # Si las tablas no existen en Oracle, descomenta la siguiente línea una vez:
     # init_db() 
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
