@@ -7,16 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #2b000c;
-  --surface: #3a0715;
-  --surface2: #4a0d1d;
-  --border: #7a2238;
+  --bg: #F2F1ED;
+  --surface: #cfb2a0;
+  --surface2: #6b1c1cab;
+  --border: #270910;
   --accent: #ffffff;
-  --accent-dim: rgba(255,255,255,.08);
-  --accent-glow: rgba(255,255,255,.18);
-  --text: #ffffff;
-  --text-muted: #f0d7de;
-  --error: #ffb3b3;
+  --accent-dim: rgba(73, 8, 8, 0.08);
+  --accent-glow: rgba(43, 39, 39, 0.18);
+  --text: #710014;
+  --text-muted: #3d0707;
+  --error: #3b0909;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -89,7 +89,7 @@ body {
 
 .feature-dot {
   width: 6px; height: 6px;
-  background: white;
+  background: rgb(97, 13, 13);
   border-radius: 50%;
   flex-shrink: 0;
   opacity: 0.5;
@@ -150,7 +150,7 @@ input {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus { border-color: white; box-shadow: 0 0 0 3px var(--accent-glow); }
+input:focus { border-color: rgb(104, 14, 14); box-shadow: 0 0 0 3px var(--accent-glow); }
 input.error-field { border-color: var(--error); }
 input::placeholder { color: var(--text-muted); opacity: 0.4; }
 
@@ -204,7 +204,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.4; }
   color: var(--text-muted);
 }
 
-.form-footer a { color: white; text-decoration: none; font-weight: 500; }
+.form-footer a { color: rgb(88, 9, 9); text-decoration: none; font-weight: 500; }
 .form-footer a:hover { text-decoration: underline; }
 
 @media (max-width: 700px) {
