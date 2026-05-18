@@ -523,6 +523,51 @@
   }
 
   .reveal.visible { opacity: 1; transform: translateY(0); }
+  @media (max-width: 768px) {
+    
+    /* 1. La franja rosada principal crece hacia abajo y se centra */
+    nav {
+        height: auto !important;
+        padding: 15px 10px !important;
+        display: flex !important;
+        flex-direction: column !important; /* Pone el logo SARES arriba y la lista abajo */
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    /* 2. El logo "SARES" se queda quietito y centrado arriba */
+    .nav-logo {
+        font-size: 24px !important;
+        margin: 0 !important;
+    }
+
+    /* 3. La lista flotante (ul) cambia de horizontal a un bloque flexible */
+    ul.nav-links {
+        display: flex !important;
+        flex-direction: row !important;   /* Mantiene los enlaces al lado del otro... */
+        flex-wrap: wrap !important;       /* ¡Pero si no caben, bajan ordenadamente! */
+        justify-content: center !important;
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 10px 15px !important;        /* Espaciado controlado (arriba/abajo y lados) */
+        width: 100% !important;
+    }
+
+    /* 4. Cada opción dentro de la lista */
+    ul.nav-links li {
+        display: inline-block !important;
+        margin: 0 !important;
+    }
+
+    /* 5. Los enlaces individuales: no se rompen y tienen buen tamaño para el dedo */
+    ul.nav-links a {
+        font-size: 14px !important;
+        white-space: nowrap !important;   /* Evita que "Cómo funciona" se parta en dos renglones */
+        padding: 6px 10px !important;
+        display: block !important;
+    }
+}
 </style>
 </head>
 <body>
