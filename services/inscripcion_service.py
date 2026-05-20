@@ -3,14 +3,16 @@ import oracledb
 from models.inscripcion import registrar_inscripcion as db_registrar_inscripcion, listar_inscripciones as db_listar_inscripciones
 from database.init_db import get_connection
 from utils.exceptions import APIError
+from flask import session
+
 
 def registrar_inscripcion(data):
-    estudiante_id = data.get("estudiante_id")
+    estudiante_id = data.get("estudiante_id") or session.get("estudiante_id")
     materia_id = data.get("materia_id")
 
     if not all([estudiante_id, materia_id]):
         return {"error": "Faltan datos"}, 400
-
+    # ... resto igual
     conn = get_connection()
     cursor = conn.cursor()
 

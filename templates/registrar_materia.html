@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d1117;
+    --bg: #000000;
     --surface: #161b22;
     --surface2: #1c2230;
     --border: #8d2011;
     --accent: #cf3e3e;
-    --accent-dim: rgba(62,207,142,0.12);
+    --accent-dim: rgba(245, 245, 245, 0.12);
     --accent-glow: rgba(253, 83, 53, 0.25);
     --text: #e6edf3;
     --text-muted: #7d8fa9;
@@ -55,7 +55,7 @@
     align-items: center;
     gap: 6px;
     background: var(--accent-dim);
-    border: 1px solid rgba(62,207,142,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: var(--accent);
     font-size: 0.72rem;
     font-weight: 500;
@@ -179,8 +179,8 @@
   }
 
   .toast.success {
-    background: rgba(62,207,142,0.1);
-    border: 1px solid rgba(62,207,142,0.3);
+    background: rgba(244, 246, 245, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: var(--accent);
     display: flex;
   }
@@ -195,7 +195,7 @@
   /* Preview de materia seleccionada */
   .preview {
     background: var(--accent-dim);
-    border: 1px solid rgba(62,207,142,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 0.6rem 0.9rem;
     margin-top: 0.5rem;
@@ -228,10 +228,7 @@
 
   <form method="POST" onsubmit="return handleSubmit(event)">
 
-    <div class="field">
-      <label for="estudiante_id">ID de estudiante</label>
-      <input type="number" id="estudiante_id" name="estudiante_id" placeholder="Ej: 1" min="1" required>
-    </div>
+  
 
     <div class="field">
       <div class="select-meta">
@@ -293,11 +290,10 @@ async function handleSubmit(e) {
   e.preventDefault();
 
   const btn = document.getElementById('btnInscribir');
-  const estudianteId = document.getElementById('estudiante_id').value;
-  const materiaId    = document.getElementById('materia').value;
+  const materiaId = document.getElementById('materia').value;
 
-  if (!estudianteId || !materiaId) {
-    showToast('Por favor completa todos los campos.', 'error');
+  if (!materiaId) {
+    showToast('Por favor selecciona una materia.', 'error');
     return false;
   }
 
@@ -309,8 +305,8 @@ async function handleSubmit(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        estudiante_id: parseInt(estudianteId),
-        materia_id:    parseInt(materiaId)
+        materia_id: parseInt(materiaId)
+        // estudiante_id viene de la sesión en el backend
       })
     });
 
