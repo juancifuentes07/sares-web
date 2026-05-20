@@ -4,21 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Estudiante - SARES</title>
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SARES">
+<link rel="apple-touch-icon" href="/static/images/logo.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --bg:#2b000c;
-  --surface:#3a0715;
-  --surface2:#4a0d1d;
+  --bg:#F2F1ED;
+  --surface:#cfb2a0;
+  --surface2:#6b1c1cab;
   --border:#7a2238;
   --accent:#ffffff;
   --accent-dim:rgba(255,255,255,.08);
   --accent-glow:rgba(255,255,255,.18);
-  --text:#ffffff;
-  --text-muted:#f0d7de;
-  --error:#ffb3b3;
+  --text:#710014;
+  --text-muted:#3d0707;
+  --error:#3b0909;
   --success:#ffffff;
 }
 
@@ -120,7 +125,7 @@ select:focus{
   padding:1rem;
   border-radius:10px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,.03);
+  background:rgba(243, 238, 238, 0.938);
   cursor:pointer;
 }
 
@@ -212,7 +217,12 @@ select:focus{
         <input type="text" id="apellido" required>
       </div>
     </div>
+<div class="accesibilidad-bar" style="position: fixed; top: 80px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
+    <button type="button" onclick="cambiarTexto(2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A+</button>
+    <button type="button" onclick="cambiarTexto(-2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A-</button>
+</div>
 
+<script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
     <div class="field">
       <label>Número de documento</label>
       <input type="text" id="documento" maxlength="10" required>
@@ -239,8 +249,8 @@ select:focus{
       <input type="checkbox" id="acepta_datos" onclick="event.stopPropagation();">
 
       <div class="checkbox-label">
-        Acepto la política de tratamiento de datos personales bajo Ley 1581 de 2012.
-      </div>
+      Acepto la política de <a href="{{ url_for('static', filename='ley_1581_de_2012.pdf') }}" target="_blank" onclick="event.stopPropagation();">tratamiento de datos personales</a> bajo Ley 1581 de 2012.      
+    </div>
     </div>
 
     <button class="btn" id="btnRegistrar">Crear cuenta</button>
