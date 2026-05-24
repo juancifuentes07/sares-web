@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template
+import os
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from config import Config  # Importamos tu configuración de Oracle
 from database.init_db import init_db, get_connection 
 from services.estudiante_service import registrar_estudiante, listar_estudiantes, obtener_estudiante, borrar_estudiante
@@ -13,6 +14,7 @@ from routes.auth_routes import auth_bp
 app = Flask(__name__)
 
 app.secret_key = "sares_secret_2025"
+app.config['SESSION_PERMANENT'] = False
 
 # --- Configuración de la Aplicación ---
 # Cargamos la configuración de Oracle desde tu clase Config
@@ -62,6 +64,11 @@ def pagina_simulacion():
 def registro():
     # 2. Las pasamos al template para que el ciclo 'for' las reconozca
     return render_template("registro.html")
+
+@app.route('/logout_f5')
+def logout_f5():
+    session.clear()
+    return redirect(url_for('index'))
 
 @app.route("/registrar_materia")
 def form_inscripcion():
@@ -154,6 +161,8 @@ def handle_api_error(error):
 # --- Ejecución del Servidor ---
 
 if __name__ == "__main__":  
-    # Si las tablas no existen en Oracle, descomenta la siguiente línea una vez:
-    # init_db() 
+    # Con este IF evitamos que el "debug" de Flask sature los canales de Oracle
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        print("--- Servidor listo para registrar estudiantes en Oracle ---")
+        
     app.run(debug=True, host='0.0.0.0', port=5000)

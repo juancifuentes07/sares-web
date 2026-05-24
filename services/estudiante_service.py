@@ -46,7 +46,12 @@ def registrar_estudiante(data):
     except oracledb.IntegrityError:
         return {"error": "El documento ya existe"}, 400
     except oracledb.Error as e:
-        return {"error": "No se puede conectar a la base de datos. Intente más tarde."}, 500
+        # === ESTO ES LO QUE VA A CAZAR EL ERROR ===
+        # Imprime el error real de Oracle en la terminal negra de VS Code
+        print("❌ ERROR REAL DE ORACLE EN EL REGISTRO:", e)
+        
+        # Te devuelve el error exacto a la pantalla para saber qué falló
+        return {"error": f"Error en Oracle: {e}"}, 500
 
 def listar_estudiantes():
     return obtener_estudiantes(), 200
