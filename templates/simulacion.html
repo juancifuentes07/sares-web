@@ -254,9 +254,15 @@
     border-radius: 10px;
     padding: 1.25rem;
     overflow: hidden;
+    position: relative;
+    height: 200px;
   }
 
-  canvas { width: 100% !important; height: 140px !important; display: block; }
+  canvas { 
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
 
   .chart-axis {
     display: flex;
@@ -360,6 +366,27 @@ function clearError() {
   document.getElementById('nota').style.borderColor = '';
 }
 
+function guardarSimulacion(data) {
+  localStorage.setItem('ultimaSimulacion', JSON.stringify(data));
+}
+
+function obtenerSimulacionGuardada() {
+  const guardada = localStorage.getItem('ultimaSimulacion');
+  return guardada ? JSON.parse(guardada) : null;
+}
+
+function limpiarSimulacion() {
+  localStorage.removeItem('ultimaSimulacion');
+}
+
+window.addEventListener('load', () => {
+  const simulacionGuardada = obtenerSimulacionGuardada();
+  if (simulacionGuardada) {
+    document.getElementById('nota').value = simulacionGuardada.nota_inicial;
+    mostrarResultados(simulacionGuardada);
+  }
+});
+
 async function simular() {
   clearError();
   const nota = parseFloat(document.getElementById('nota').value);
@@ -386,6 +413,7 @@ async function simular() {
     });
 
     const data = await response.json();
+    guardarSimulacion(data);
     mostrarResultados(data);
   } catch (e) {
     console.error(e);
@@ -422,75 +450,101 @@ function dibujarGrafico(historial) {
   const wrap = canvas.parentElement;
   const ctx = canvas.getContext('2d');
 
-  // Forzar dimensiones explícitas
-  const W = wrap.clientWidth - 40; // descontando el padding
-  const H = 140;
-  const dpr = window.devicePixelRatio || 1;
+  // Esperar a que el DOM esté completamente renderizado
+  setTimeout(() => {
+    const dpr = window.devicePixelRatio || 1;
+    
+    // Obtener el ancho y alto reales del contenedor
+    const containerWidth = wrap.offsetWidth;
+    const containerHeight = wrap.offsetHeight;
+    const W = Math.max(containerWidth - 40, 100);
+    const H = Math.max(containerHeight - 40, 140);
 
-  canvas.width  = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width  = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.scale(dpr, dpr);
+    // Configurar resolución física
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    
+    // Configurar tamaño visual
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    
+    ctx.scale(dpr, dpr);
 
-  const pad = { top: 12, right: 16, bottom: 12, left: 36 };
-  const chartW = W - pad.left - pad.right;
-  const chartH = H - pad.top - pad.bottom;
+    // Márgenes
+    const pad = { top: 16, right: 20, bottom: 24, left: 45 };
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top - pad.bottom;
 
-  const min = 0, max = 5;
-  const n = historial.length;
+    const min = 0, max = 5;
+    const n = historial.length || 1;
 
-  const xOf = i => pad.left + (i / (n - 1)) * chartW;
-  const yOf = v => pad.top + chartH - ((v - min) / (max - min)) * chartH;
+    const xOf = i => pad.left + (i / Math.max(n - 1, 1)) * chartW;
+    const yOf = v => pad.top + chartH - ((v - min) / (max - min)) * chartH;
 
-  ctx.clearRect(0, 0, W, H);
+    // Limpiar
+    ctx.fillStyle = 'var(--surface2)';
+    ctx.fillRect(0, 0, W, H);
 
-  [1, 2, 3, 4, 5].forEach(v => {
-    const y = yOf(v);
-    ctx.beginPath();
-    ctx.strokeStyle = v === 3 ? 'rgba(227,179,65,0.25)' : 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = v === 3 ? 1.5 : 1;
-    ctx.setLineDash(v === 3 ? [4, 4] : []);
-    ctx.moveTo(pad.left, y);
-    ctx.lineTo(W - pad.right, y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(125,143,169,0.7)';
-    ctx.font = '10px DM Sans, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(0), pad.left - 6, y + 3.5);
-  });
+    // Líneas de referencia
+    [1, 2, 3, 4, 5].forEach(v => {
+      const y = yOf(v);
+      ctx.beginPath();
+      ctx.strokeStyle = v === 3 ? 'rgba(227,179,65,0.25)' : 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = v === 3 ? 1.5 : 0.8;
+      ctx.setLineDash(v === 3 ? [4, 4] : []);
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(W - pad.right, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = 'rgba(200,180,160,0.8)';
+      ctx.font = 'bold 11px DM Sans, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(v.toFixed(0), pad.left - 8, y + 4);
+    });
 
-  const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
-  grad.addColorStop(0, 'rgba(62,207,142,0.25)');
-  grad.addColorStop(1, 'rgba(62,207,142,0)');
+    if (historial.length > 0) {
+      const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+      grad.addColorStop(0, 'rgba(62,207,142,0.3)');
+      grad.addColorStop(1, 'rgba(62,207,142,0.05)');
 
-  ctx.beginPath();
-  ctx.moveTo(xOf(0), yOf(historial[0]));
-  for (let i = 1; i < n; i++) ctx.lineTo(xOf(i), yOf(historial[i]));
-  ctx.lineTo(xOf(n - 1), H - pad.bottom);
-  ctx.lineTo(xOf(0), H - pad.bottom);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+      // Área
+      ctx.beginPath();
+      ctx.moveTo(xOf(0), yOf(historial[0]));
+      for (let i = 1; i < n; i++) {
+        ctx.lineTo(xOf(i), yOf(historial[i]));
+      }
+      ctx.lineTo(xOf(n - 1), H - pad.bottom);
+      ctx.lineTo(xOf(0), H - pad.bottom);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
 
-  ctx.beginPath();
-  ctx.moveTo(xOf(0), yOf(historial[0]));
-  for (let i = 1; i < n; i++) ctx.lineTo(xOf(i), yOf(historial[i]));
-  ctx.strokeStyle = '#3ecf8e';
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
+      // Línea
+      ctx.beginPath();
+      ctx.moveTo(xOf(0), yOf(historial[0]));
+      for (let i = 1; i < n; i++) {
+        ctx.lineTo(xOf(i), yOf(historial[i]));
+      }
+      ctx.strokeStyle = '#3ecf8e';
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
 
-  const lx = xOf(n - 1), ly = yOf(historial[n - 1]);
-  ctx.beginPath();
-  ctx.arc(lx, ly, 5, 0, Math.PI * 2);
-  ctx.fillStyle = '#3ecf8e';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(lx, ly, 9, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(62,207,142,0.2)';
-  ctx.fill();
+      // Punto final
+      const lx = xOf(n - 1), ly = yOf(historial[n - 1]);
+      ctx.beginPath();
+      ctx.arc(lx, ly, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#3ecf8e';
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.arc(lx, ly, 11, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(62,207,142,0.25)';
+      ctx.fill();
+    }
+  }, 0);
 }
 </script>
 </body>

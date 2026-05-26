@@ -31,11 +31,21 @@ app.register_blueprint(auth_bp)
 
 @app.route("/proyeccion/<int:inscripcion_id>")
 def proyeccion(inscripcion_id):
-    """Obtiene la nota de Oracle y calcula la proyección de mejora"""
+    """Obtiene la nota de Oracle, calcula la proyección y muestra detalles con actividades"""
+    if "estudiante_id" not in session:
+        return redirect(url_for("auth.login"))
+    
     conn = get_connection()
     cursor = conn.cursor()
-    # Usamos la sintaxis de Oracle :id para evitar inyección SQL
-    cursor.execute("SELECT nota_corte1 FROM inscripciones WHERE id = :id", {"id": inscripcion_id})
+    
+    # Obtener información de la inscripción
+    cursor.execute("""
+        SELECT i.id, i.nota_corte1, m.nombre, m.id
+        FROM inscripciones i
+        JOIN materias m ON i.materia_id = m.id
+        WHERE i.id = :id AND i.estudiante_id = :est_id
+    """, {"id": inscripcion_id, "est_id": session["estudiante_id"]})
+    
     row = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -43,12 +53,20 @@ def proyeccion(inscripcion_id):
     if not row:
         raise APIError("Inscripción no encontrada", 404)
     
-    nota = row[0]
+    inscripcion_id, nota, nombre_materia, materia_id = row
+    
     if nota is None:
         raise APIError("El estudiante no tiene registrada la nota del primer corte", 400)
     
     resultado = simular_mejora(float(nota))
-    return jsonify(resultado), 200
+    
+    return render_template("proyeccion_detalle.html",
+        nombre_materia=nombre_materia,
+        materia_id=materia_id,
+        inscripcion_id=inscripcion_id,
+        resultado=resultado,
+        nombre=session.get("estudiante_nombre", "Estudiante")
+    )
 
 # --- Rutas de Renderizado de Plantillas (Frontend) ---
 

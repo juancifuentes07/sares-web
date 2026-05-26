@@ -518,6 +518,64 @@ nav {
   if (navegacion && navegacion.type === "reload") {
       window.location.href = "/logout_f5";
   }
+
+  // 3. Mostrar notas simuladas en el dashboard
+  function mostrarNotasSimuladas() {
+    const simulacionGuardada = localStorage.getItem('ultimaSimulacion');
+    if (!simulacionGuardada) return;
+    
+    try {
+      const data = JSON.parse(simulacionGuardada);
+      const materias = document.querySelectorAll('.materia-card');
+      
+      // Mostrar en la primera materia (o puedes iterar por todas)
+      if (materias.length > 0) {
+        const primeraMat = materias[0];
+        const statsDiv = primeraMat.querySelector('.materia-stats');
+        
+        if (statsDiv) {
+          // Actualizar nota actual con la nota inicial simulada
+          const notaActualDiv = statsDiv.querySelector('.mini-stat:first-child .mini-stat-value');
+          if (notaActualDiv && !notaActualDiv.textContent.includes(data.nota_inicial)) {
+            const colorClass = data.nota_inicial >= 3.0 ? 'ok' : (data.nota_inicial >= 2.0 ? 'warn' : 'bad');
+            notaActualDiv.className = `mini-stat-value ${colorClass}`;
+            notaActualDiv.textContent = data.nota_inicial.toFixed(1);
+          }
+          
+          // Actualizar nota estimada con la nota final simulada
+          const notaEstimadaDiv = statsDiv.querySelector('.mini-stat:last-child .mini-stat-value');
+          if (notaEstimadaDiv) {
+            const colorClass = data.nota_final_estimada >= 3.0 ? 'ok' : 'bad';
+            notaEstimadaDiv.className = `mini-stat-value ${colorClass}`;
+            notaEstimadaDiv.textContent = data.nota_final_estimada.toFixed(2);
+          }
+        }
+        
+        // Actualizar barra de progreso
+        const progressBar = primeraMat.querySelector('.progress-bar');
+        if (progressBar) {
+          const pct = (data.nota_final_estimada / 5.0 * 100);
+          const colorClass = data.nota_final_estimada >= 3.0 ? 'ok' : (data.nota_final_estimada >= 2.0 ? 'warn' : 'bad');
+          progressBar.className = `progress-bar ${colorClass}`;
+          progressBar.style.width = Math.min(pct, 100) + '%';
+        }
+        
+        // Actualizar actividades recomendadas
+        const footerSpan = primeraMat.querySelector('.materia-footer span');
+        if (footerSpan) {
+          footerSpan.textContent = data.iteraciones + ' actividades recomendadas';
+        }
+        
+        // Actualizar estado de la tarjeta
+        primeraMat.className = `materia-card ${data.nota_final_estimada >= 3.0 ? 'estable' : 'riesgo'}`;
+      }
+    } catch (e) {
+      console.error('Error al mostrar notas simuladas:', e);
+    }
+  }
+
+  // Ejecutar cuando carga la página
+  window.addEventListener('load', mostrarNotasSimuladas);
 </script>
 </body>
 </html>

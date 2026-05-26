@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyección - {{ nombre_materia }} - SARES</title>
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SARES">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #F2F1ED;
+  --surface: #cfb2a0;
+  --surface2: #6b1c1cab;
+  --border: #7a2238;
+  --accent: #ffffff;
+  --accent-dim: rgba(255,255,255,.08);
+  --accent-glow: rgba(255,255,255,.18);
+  --text: #710014;
+  --text-muted: #3d0707;
+  --success: #a8f0c6;
+  --error: #ff6b6b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: rgba(241, 169, 169, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: border-color 0.2s;
+}
+
+.btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
+.page { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+}
+
+.stat-box.ok .stat-value { color: var(--success); }
+.stat-box.bad .stat-value { color: var(--error); }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.actividades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.actividad-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.actividad-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.actividad-numero {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.actividad-titulo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.actividad-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.actividad-meta {
+  font-size: 0.75rem;
+  color: var(--success);
+  margin-top: 0.75rem;
+  font-weight: 500;
+}
+
+.alert {
+  background: rgba(168,240,198,0.12);
+  border: 1px solid rgba(168,240,198,0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  color: var(--success);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.alert.warn {
+  background: rgba(255,107,107,0.12);
+  border-color: rgba(255,107,107,0.3);
+  color: var(--error);
+}
+
+.accesibilidad-bar { position: fixed; top: 80px; right: 15px; z-index: 9999; display: flex; gap: 5px; }
+.accesibilidad-bar button { background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dashboard" class="nav-brand">SARES</a>
+  <a href="/dashboard" class="btn-back">← Volver al dashboard</a>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <h1>{{ nombre_materia }}</h1>
+    <p>Proyección de mejora académica y actividades recomendadas</p>
+  </div>
+
+  <div class="card">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">Nota inicial</div>
+        <div class="stat-value">{{ "%.1f"|format(resultado.nota_inicial) }}</div>
+      </div>
+      <div class="stat-box {% if resultado.nota_final_estimada >= 3.0 %}ok{% else %}bad{% endif %}">
+        <div class="stat-label">Nota estimada</div>
+        <div class="stat-value">{{ "%.2f"|format(resultado.nota_final_estimada) }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Actividades</div>
+        <div class="stat-value">{{ resultado.iteraciones }}</div>
+      </div>
+    </div>
+
+    {% if resultado.nota_final_estimada >= 3.0 %}
+    <div class="alert">
+      ✓ Con las actividades recomendadas, es posible superar la materia.
+    </div>
+    {% else %}
+    <div class="alert warn">
+      ⚠ La nota estimada sigue siendo de riesgo. Se recomienda apoyo adicional.
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="section-title">Progresión Estimada</div>
+    <div style="height: 200px; margin: 1.5rem 0;">
+      <canvas id="chartCanvas" style="display: block; width: 100%; height: 100%;"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Actividades Recomendadas</div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+      Completa estas {{ resultado.iteraciones }} actividades enfocadas en {{ nombre_materia }} para mejorar tu nota.
+    </p>
+
+    <div class="actividades-grid" id="actividadesContainer"></div>
+  </div>
+
+</div>
+
+<div class="accesibilidad-bar">
+  <button type="button" onclick="cambiarTexto(2)">A+</button>
+  <button type="button" onclick="cambiarTexto(-2)">A-</button>
+</div>
+
+<script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
+
+<script>
+const actividadesDisponibles = [
+  // Actividades de lectura y comprensión
+  { titulo: "Lectura guiada", desc: "Lee los capítulos del material oficial" },
+  { titulo: "Resumen conceptual", desc: "Elabora un resumen de los temas clave" },
+  { titulo: "Análisis de casos", desc: "Estudia casos de aplicación práctica" },
+  
+  // Actividades prácticas
+  { titulo: "Ejercicios de práctica", desc: "Resuelve la serie de problemas propuestos" },
+  { titulo: "Simulación práctica", desc: "Realiza la práctica de laboratorio" },
+  { titulo: "Proyecto integrador", desc: "Desarrolla el proyecto integrativo del tema" },
+  
+  // Actividades colaborativas
+  { titulo: "Trabajo en grupo", desc: "Colabora en la tarea grupal del módulo" },
+  { titulo: "Discusión en foro", desc: "Participa en la discusión del tema" },
+  
+  // Evaluaciones
+  { titulo: "Cuestionario de autoevaluación", desc: "Responde el quiz del tema" },
+  { titulo: "Prueba corta", desc: "Realiza la evaluación rápida del módulo" },
+  
+  // Investigación
+  { titulo: "Investigación adicional", desc: "Busca y analiza fuentes complementarias" },
+  { titulo: "Video educativo", desc: "Ve y comenta sobre los videos recomendados" },
+];
+
+function dibujarGrafico(historial) {
+  const canvas = document.getElementById('chartCanvas');
+  const wrap = canvas.parentElement;
+  const ctx = canvas.getContext('2d');
+
+  setTimeout(() => {
+    const dpr = window.devicePixelRatio || 1;
+    
+    const containerWidth = wrap.offsetWidth;
+    const containerHeight = wrap.offsetHeight;
+    const W = Math.max(containerWidth - 40, 100);
+    const H = Math.max(containerHeight - 40, 140);
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    
+    ctx.scale(dpr, dpr);
+
+    const pad = { top: 16, right: 20, bottom: 24, left: 45 };
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top - pad.bottom;
+
+    const min = 0, max = 5;
+    const n = historial.length || 1;
+
+    const xOf = i => pad.left + (i / Math.max(n - 1, 1)) * chartW;
+    const yOf = v => pad.top + chartH - ((v - min) / (max - min)) * chartH;
+
+    ctx.fillStyle = 'var(--surface2)';
+    ctx.fillRect(0, 0, W, H);
+
+    [1, 2, 3, 4, 5].forEach(v => {
+      const y = yOf(v);
+      ctx.beginPath();
+      ctx.strokeStyle = v === 3 ? 'rgba(227,179,65,0.25)' : 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = v === 3 ? 1.5 : 0.8;
+      ctx.setLineDash(v === 3 ? [4, 4] : []);
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(W - pad.right, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = 'rgba(200,180,160,0.8)';
+      ctx.font = 'bold 11px DM Sans, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(v.toFixed(0), pad.left - 8, y + 4);
+    });
+
+    if (historial.length > 0) {
+      const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+      grad.addColorStop(0, 'rgba(62,207,142,0.3)');
+      grad.addColorStop(1, 'rgba(62,207,142,0.05)');
+
+      ctx.beginPath();
+      ctx.moveTo(xOf(0), yOf(historial[0]));
+      for (let i = 1; i < n; i++) {
+        ctx.lineTo(xOf(i), yOf(historial[i]));
+      }
+      ctx.lineTo(xOf(n - 1), H - pad.bottom);
+      ctx.lineTo(xOf(0), H - pad.bottom);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(xOf(0), yOf(historial[0]));
+      for (let i = 1; i < n; i++) {
+        ctx.lineTo(xOf(i), yOf(historial[i]));
+      }
+      ctx.strokeStyle = '#3ecf8e';
+      ctx.lineWidth = 3;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      const lx = xOf(n - 1), ly = yOf(historial[n - 1]);
+      ctx.beginPath();
+      ctx.arc(lx, ly, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#3ecf8e';
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.arc(lx, ly, 11, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(62,207,142,0.25)';
+      ctx.fill();
+    }
+  }, 0);
+}
+
+function generarActividades() {
+  const container = document.getElementById('actividadesContainer');
+  const numActividades = {{ resultado.iteraciones }};
+  const actividadesSeleccionadas = [];
+  
+  // Repetir las actividades disponibles según sea necesario
+  while (actividadesSeleccionadas.length < numActividades) {
+    const actividades_temp = [...actividadesDisponibles];
+    for (let i = 0; i < Math.min(numActividades - actividadesSeleccionadas.length, actividades_temp.length); i++) {
+      const indice = Math.floor(Math.random() * actividades_temp.length);
+      actividadesSeleccionadas.push(actividades_temp[indice]);
+      actividades_temp.splice(indice, 1);
+    }
+  }
+  
+  // Renderizar tarjetas
+  actividadesSeleccionadas.forEach((act, idx) => {
+    const card = document.createElement('div');
+    card.className = 'actividad-card';
+    card.innerHTML = `
+      <div class="actividad-numero">Actividad ${idx + 1}</div>
+      <div class="actividad-titulo">${act.titulo}</div>
+      <div class="actividad-desc">${act.desc}</div>
+      <div class="actividad-meta">${Math.floor((idx + 1) * 100 / numActividades)}% completado</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+window.addEventListener('load', () => {
+  dibujarGrafico({{ resultado.historial | tojson }});
+  generarActividades();
+});
+</script>
+
+</body>
+</html>
