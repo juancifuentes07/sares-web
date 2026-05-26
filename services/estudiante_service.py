@@ -42,16 +42,17 @@ def registrar_estudiante(data):
 
     try:
         estudiante = crear_estudiante(nombre, apellido, documento, carrera, password_hash)
+        if estudiante is None:
+            return {"error": "No se pudo obtener el estudiante creado"}, 500
         return {"mensaje": "Estudiante creado correctamente", "estudiante_id": estudiante["id"], "nombre": estudiante["nombre"]}, 201
     except oracledb.IntegrityError:
         return {"error": "El documento ya existe"}, 400
     except oracledb.Error as e:
-        # === ESTO ES LO QUE VA A CAZAR EL ERROR ===
-        # Imprime el error real de Oracle en la terminal negra de VS Code
         print("❌ ERROR REAL DE ORACLE EN EL REGISTRO:", e)
-        
-        # Te devuelve el error exacto a la pantalla para saber qué falló
         return {"error": f"Error en Oracle: {e}"}, 500
+    except Exception as e:
+        print("❌ ERROR INTERNO AL REGISTRAR ESTUDIANTE:", e)
+        return {"error": "Error interno al registrar el estudiante"}, 500
 
 def listar_estudiantes():
     return obtener_estudiantes(), 200

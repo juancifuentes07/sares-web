@@ -246,11 +246,15 @@
       <select id="materia" name="materia_id" onchange="onMateriaChange()" required>
   <option value="">Selecciona una materia…</option>
 
-  <optgroup label="Ingeniería de Sistemas">
-    {% for materia in materias if materia.carrera == 'Ingeniería de Sistemas' %}
-    <option value="{{ materia.id }}">{{ materia.nombre }}</option>
+  {% if materias %}
+  <optgroup label="Materias disponibles">
+    {% for materia in materias %}
+    <option value="{{ materia.id }}">{{ materia.nombre }} — {{ materia.carrera }}</option>
     {% endfor %}
   </optgroup>
+  {% else %}
+    <option disabled>No hay materias disponibles</option>
+  {% endif %}
 
   <optgroup label="Otras carreras — próximamente" disabled
     style="color: var(--text-muted); font-style: italic;">

@@ -3,19 +3,36 @@ from database.init_db import get_connection
 def crear_estudiante(nombre, apellido, documento, carrera, password_hash):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO estudiantes (nombre, apellido, documento, carrera, password_hash)
-        VALUES (:nombre, :apellido, :documento, :carrera, :password_hash)
-    """, {
-        "nombre": nombre,
-        "apellido": apellido,
-        "documento": documento,
-        "carrera": carrera,
-        "password_hash": password_hash
-    })
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("""
+            INSERT INTO estudiantes (nombre, apellido, documento, carrera, password_hash)
+            VALUES (:nombre, :apellido, :documento, :carrera, :password_hash)
+        """, {
+            "nombre": nombre,
+            "apellido": apellido,
+            "documento": documento,
+            "carrera": carrera,
+            "password_hash": password_hash
+        })
+        conn.commit()
+
+        cursor.execute(
+            "SELECT id, nombre, apellido, documento, carrera FROM estudiantes WHERE documento = :documento",
+            {"documento": documento}
+        )
+        row = cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "nombre": row[1],
+                "apellido": row[2],
+                "documento": row[3],
+                "carrera": row[4]
+            }
+        return None
+    finally:
+        cursor.close()
+        conn.close()
 
 def obtener_estudiantes():
     conn = get_connection()

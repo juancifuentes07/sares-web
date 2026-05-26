@@ -79,10 +79,16 @@
     font-size: 0.875rem;
     padding: 0.4rem 0.85rem;
     border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
+    transition: color 0.2s, background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
   }
 
-  .nav-links a:hover { color: var(--text); background: var(--surface2); }
+  .nav-links a:hover {
+    color: #ffffff;
+    background: rgba(151, 41, 41, 0.95);
+    transform: scale(1.03);
+  }
 
   .nav-cta {
     background: var(--accent) !important;
@@ -229,9 +235,9 @@
   }
 
   .btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px var(--accent-glow);
+    background: rgba(53, 21, 21, 0.95);
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
   }
 
   .btn-secondary {
@@ -252,8 +258,8 @@
 
   .btn-secondary:hover {
     border-color: var(--accent);
-    background: var(--accent-dim);
-    transform: translateY(-2px);
+    background: rgba(217, 215, 191, 0.18);
+    transform: translateY(-1px) scale(1.03);
   }
 
   /* ── STATS BAR ── */
@@ -335,10 +341,7 @@
     background: var(--surface);
     padding: 2rem;
     position: relative;
-    transition: background 0.2s;
   }
-
-  .how-step:hover { background: var(--surface2); }
 
   .step-num {
     font-family: 'Syne', sans-serif;
@@ -387,7 +390,7 @@
     transition: border-color 0.2s, transform 0.2s;
   }
 
-  .feature-card:hover { border-color: rgba(146, 30, 9, 0.89); transform: translateY(-3px); }
+  .feature-card:hover { border-color: rgba(62, 207, 142, 0.65); transform: translateY(-3px); }
 
   .feature-card.large {
     grid-column: span 2;
@@ -445,14 +448,15 @@
   .tech-tag {
     background: var(--surface2);
     border: 1px solid var(--border);
-    color: var(--text-muted);
+    color: #ffffff;
     font-size: 0.8rem;
+    font-weight: 700;
     padding: 0.4rem 0.9rem;
     border-radius: 6px;
     transition: border-color 0.2s, color 0.2s;
   }
 
-  .tech-tag:hover { border-color: var(--accent); color: var(--accent); }
+  .tech-tag:hover { border-color: var(--accent); color: #ffffff; }
 
   /* ── CTA ── */
   .cta-section {
@@ -581,8 +585,7 @@
     <li><a href="#como-funciona">Cómo funciona</a></li>
     <li><a href="#tecnologia">Tecnología</a></li>
     <li><a href="/registro">Registrarse</a></li>
-    <li><a href="/login">Iniciar sesión</a></li>  
-    <li><a href="/simulacion" class="nav-cta">Simular →</a></li>
+    <li><a href="/login">Iniciar sesión</a></li>
   </ul>
 </nav>
 
@@ -603,7 +606,7 @@
     </p>
     <div class="hero-actions">
       <a href="/registro" class="btn-primary">Crear cuenta →</a>
-      <a href="/simulacion" class="btn-secondary">Ver simulación</a>
+      <a href="/login" class="btn-secondary">Iniciar sesión</a>
     </div>
   </div>
 </div>
@@ -634,7 +637,7 @@
 
 <section id="como-funciona" class="reveal">
   <div class="section-label">¿Cómo funciona?</div>
-  <h2 class="section-title">Tres pasos para recuperar tu nota</h2>
+  <h2 class="section-title">Cuatro pasos para recuperar tu nota</h2>
   <p class="section-sub">
     El sistema combina tu historial de notas con un modelo de crecimiento matemático
     para calcular exactamente cuánto esfuerzo necesitas para pasar la materia.
@@ -764,7 +767,7 @@
     <p>Ingresa tu nota y descubre cuántas actividades necesitas para pasar tu materia.</p>
     <div class="cta-links">
       <a href="/registro" class="btn-primary">Crear cuenta →</a>
-      <a href="/simulacion" class="btn-secondary">Probar simulación</a>
+      <a href="/login" class="btn-secondary">Iniciar sesión</a>
     </div>
   </div>
 </div>
