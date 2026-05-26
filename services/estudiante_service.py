@@ -41,8 +41,8 @@ def registrar_estudiante(data):
     password_hash = generate_password_hash(password)
 
     try:
-        crear_estudiante(nombre, apellido, documento, carrera, password_hash)
-        return {"mensaje": "Estudiante creado correctamente"}, 201
+        estudiante = crear_estudiante(nombre, apellido, documento, carrera, password_hash)
+        return {"mensaje": "Estudiante creado correctamente", "estudiante_id": estudiante["id"], "nombre": estudiante["nombre"]}, 201
     except oracledb.IntegrityError:
         return {"error": "El documento ya existe"}, 400
     except oracledb.Error as e:

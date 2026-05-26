@@ -112,6 +112,11 @@ def registrar_estudiante_route():
 
     response, status = registrar_estudiante(data)
 
+    if status == 201:
+        # Auto-login después del registro
+        session["estudiante_id"] = response.get("estudiante_id")
+        session["estudiante_nombre"] = response.get("nombre")
+
     return jsonify(response), status
 @app.route("/estudiantes", methods=["GET"])
 def obtener_estudiantes():

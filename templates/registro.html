@@ -209,15 +209,20 @@ select:focus{
 
   <form id="formRegistro" onsubmit="event.preventDefault(); registrar();">
 
+    <div class="field">
+      <label>Correo Institucional</label>
+      <input type="email" id="correo" oninput="extraerNombreApellido(this.value)" placeholder="ej: laura-sanchez@unilibre.edu.co" required>
+    </div>
+
     <div class="row">
       <div class="field">
         <label>Nombre</label>
-        <input type="text" id="nombre" required>
+        <input type="text" id="nombre" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
       </div>
 
       <div class="field">
         <label>Apellido</label>
-        <input type="text" id="apellido" required>
+        <input type="text" id="apellido" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
       </div>
     </div>
 <div class="accesibilidad-bar" style="position: fixed; top: 80px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
@@ -228,7 +233,7 @@ select:focus{
 <script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
     <div class="field">
       <label>Número de documento</label>
-      <input type="text" id="documento" maxlength="10" required>
+      <input type="text" id="documento" maxlength="11" pattern="\d{7,11}" title="El documento debe tener entre 7 y 11 números" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
     </div>
 
     <div class="field">
@@ -270,11 +275,31 @@ select:focus{
 
 <script>
 
+function extraerNombreApellido(correo) {
+  if (!correo || !correo.includes('@')) return;
+  
+  // Extraer la parte antes del @
+  const parteCorreo = correo.split('@')[0];
+  
+  // Separar por guión
+  const partes = parteCorreo.split('-');
+  
+  if (partes.length >= 2) {
+    // Capitalizar primera letra
+    const nombre = partes[0].charAt(0).toUpperCase() + partes[0].slice(1);
+    const apellido = partes[1].charAt(0).toUpperCase() + partes[1].slice(1);
+    
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('apellido').value = apellido;
+  }
+}
+
 async function registrar(){
 
     const btn = document.getElementById("btnRegistrar");
 
     const data = {
+        correo: document.getElementById("correo").value.trim(),
         nombre: document.getElementById("nombre").value.trim(),
         apellido: document.getElementById("apellido").value.trim(),
         documento: document.getElementById("documento").value.trim(),
@@ -282,6 +307,20 @@ async function registrar(){
         acepta_tratamiento: document.getElementById("acepta_datos").checked,
         password: document.getElementById("contrasena").value
     };
+
+    // Validar campos vacíos
+    const camposFaltantes = [];
+    if (!data.correo) camposFaltantes.push("Correo Institucional");
+    if (!data.nombre) camposFaltantes.push("Nombre");
+    if (!data.apellido) camposFaltantes.push("Apellido");
+    if (!data.documento) camposFaltantes.push("Número de documento");
+    if (!data.password) camposFaltantes.push("Contraseña");
+    if (!data.carrera) camposFaltantes.push("Carrera");
+
+    if (camposFaltantes.length > 0) {
+        showToast("Faltan los siguientes campos: " + camposFaltantes.join(", "), "error");
+        return;
+    }
 
     if(!data.acepta_tratamiento){
         showToast("Debe aceptar tratamiento de datos.","error");
@@ -319,7 +358,7 @@ async function registrar(){
         const result = await response.json();
 
         if(response.ok){
-            window.location.href = "/login";
+            window.location.href = "/dashboard";
         }else{
             showToast(result.error || "Error en registro.","error");
         }
