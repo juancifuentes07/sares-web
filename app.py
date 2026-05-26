@@ -76,7 +76,30 @@ def form_inscripcion():
     materias, _ = listar_materias()
     return render_template("registrar_materia.html", materias=materias)
 
+@app.after_request
+def agregar_cabeceras_seguridad(response):
+    # Forzamos una política estricta y limpia para OWASP ZAP
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "img-src 'self' data:; "
+        "font-src 'self' data: https://fonts.gstatic.com; "
+        "object-src 'none'; "
+        "frame-ancestors 'none';"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    
+    # SOLUCIÓN ALERTA WERKZEUG: Pisamos el nombre del servidor para que no revele la versión
+    response.headers['Server'] = 'Secure-Server'
+    
+    return response
+
+
 # --- Endpoints de la API ---
+
 
 @app.route('/estudiantes', methods=['POST'])
 def registrar_estudiante_route():
