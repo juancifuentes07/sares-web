@@ -8,5 +8,5 @@ class Config:
     PUERTO = '1521'
     SERVICIO = 'xe' 
 
-    SQLALCHEMY_DATABASE_URI = f'oracle+oracledb://{USUARIO}:{PASSWORD}@{HOST}:{PUERTO}/?service_name={SERVICIO}'
+    SQLALCHEMY_DATABASE_URI = ( f'oracle+oracledb://{USUARIO}:{PASSWORD}@{HOST}:{PUERTO}/?service_name={SERVICIO}')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

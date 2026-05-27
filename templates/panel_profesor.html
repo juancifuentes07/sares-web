@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de {{ profesor.nombre }} — SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F1ED; --surface: #cfb2a0; --surface2: #6b1c1cab;
+  --border: #270910; --accent: #ffffff; --text: #710014;
+  --text-muted: #3d0707; --ok: #1d6b2f; --warn: #9c5a00; --danger: #8a0d0d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 1.2rem 2rem; display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.brand {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+  letter-spacing: 0.12em; color: var(--accent); text-decoration: none;
+}
+.nav-back { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+.nav-back:hover { text-decoration: underline; }
+.container { max-width: 1000px; margin: 0 auto; padding: 2.5rem 2rem; }
+.prof-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.4rem; }
+.prof-avatar {
+  width: 52px; height: 52px; background: var(--surface2); color: var(--accent);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+}
+.page-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
+.page-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 2rem; }
+.stats { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.4rem; min-width: 140px;
+}
+.stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.4rem; margin-bottom: 1.2rem;
+}
+.card-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; flex-wrap: wrap; gap: 0.8rem;
+}
+.student-name { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; }
+.student-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+.pill {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+  padding: 0.3rem 0.7rem; border-radius: 20px; text-transform: uppercase;
+}
+.pill.en_seguimiento { background: rgba(156,90,0,.18); color: var(--warn); }
+.pill.mejorado       { background: rgba(29,107,47,.18); color: var(--ok); }
+.pill.cerrado        { background: rgba(61,7,7,.12);    color: var(--text-muted); }
+.grades { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+.grade-box { text-align: center; }
+.grade-val { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; }
+.grade-lbl { font-size: 0.72rem; color: var(--text-muted); }
+.tendencia { font-size: 0.8rem; font-weight: 600; }
+.tendencia.mejorando { color: var(--ok); }
+.tendencia.bajando   { color: var(--danger); }
+.tendencia.estable   { color: var(--text-muted); }
+.proj-bar {
+  height: 8px; background: rgba(39,9,16,.15);
+  border-radius: 6px; overflow: hidden; margin-top: 1rem;
+}
+.proj-fill { height: 100%; border-radius: 6px; }
+.actividades { margin-top: 1.2rem; padding-top: 1.1rem; border-top: 1px solid var(--border); }
+.act-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.2rem; }
+.act-sub { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+.act-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; font-size: 0.9rem; }
+.act-row input[type=checkbox] { width: 17px; height: 17px; cursor: pointer; flex-shrink: 0; }
+.act-row.hecha label { text-decoration: line-through; opacity: 0.55; }
+.act-row label { cursor: pointer; }
+.act-vacio { font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
+.add-act { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+.add-act input {
+  flex: 1; padding: 0.5rem 0.7rem; background: var(--surface2); color: var(--accent);
+  border: 1px solid var(--border); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+}
+.add-act input::placeholder { color: rgba(255,255,255,.5); }
+.btn {
+  background: white; color: #111; border: none; padding: 0.5rem 1rem;
+  border-radius: 6px; font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 0.82rem; cursor: pointer;
+}
+.btn:hover { opacity: 0.9; }
+.empty {
+  background: var(--surface); border: 1px dashed var(--border);
+  border-radius: 12px; padding: 3rem 2rem; text-align: center; color: var(--text-muted);
+}
+.empty h3 { font-family: 'Syne', sans-serif; margin-bottom: 0.5rem; color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/profesor" class="brand">SARES &middot; Docentes</a>
+  <a href="/profesor" class="nav-back">&larr; Cambiar de profesor</a>
+</header>
+
+<div class="container">
+  <div class="prof-header">
+    <div class="prof-avatar">{{ profesor.nombre[0] }}{{ profesor.apellido[0] }}</div>
+    <div>
+      <div class="page-title">Prof. {{ profesor.nombre }} {{ profesor.apellido }}</div>
+    </div>
+  </div>
+  <p class="page-sub">Estudiantes asignados por estar en riesgo. Asigna actividades para mejorar su rendimiento y haz seguimiento de su progreso.</p>
+
+  {% set activos   = estudiantes | selectattr('estado','equalto','en_seguimiento') | list %}
+  {% set mejorados = estudiantes | selectattr('estado','equalto','mejorado') | list %}
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">{{ estudiantes | length }}</div>
+      <div class="stat-label">Estudiantes asignados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">{{ activos | length }}</div>
+      <div class="stat-label">En seguimiento</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">{{ mejorados | length }}</div>
+      <div class="stat-label">Han mejorado</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">{{ total_por_hacer }}</div>
+      <div class="stat-label">Actividades por hacer</div>
+    </div>
+  </div>
+
+  {% if estudiantes | length == 0 %}
+    <div class="empty">
+      <h3>Sin estudiantes asignados</h3>
+      <p>Cuando un estudiante de las materias de este profesor entre en riesgo, aparecera aqui automaticamente.</p>
+    </div>
+  {% else %}
+    {% for e in estudiantes %}
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <div class="student-name">{{ e.estudiante }}</div>
+          <div class="student-meta">
+            Documento: {{ e.documento }} &middot; Materia a reforzar: <strong>{{ e.materia }}</strong>
+            &middot; Asignado el {{ e.fecha_asignacion }}
+          </div>
+        </div>
+        <span class="pill {{ e.estado }}">
+          {% if e.estado == 'en_seguimiento' %}En seguimiento
+          {% elif e.estado == 'mejorado' %}Mejorado
+          {% else %}Cerrado{% endif %}
+        </span>
+      </div>
+
+      <div class="grades">
+        <div class="grade-box">
+          <div class="grade-val">{{ '%.2f'|format(e.nota_inicial) }}</div>
+          <div class="grade-lbl">Nota al asignar</div>
+        </div>
+        <div class="grade-box">
+          <div class="grade-val">{{ '%.2f'|format(e.nota_actual) }}</div>
+          <div class="grade-lbl">Nota actual</div>
+        </div>
+        {% if e.proyeccion %}
+        <div class="grade-box">
+          <div class="grade-val">{{ '%.2f'|format(e.proyeccion.nota_final_estimada) }}</div>
+          <div class="grade-lbl">Proyeccion final</div>
+        </div>
+        {% endif %}
+        <div class="grade-box" style="text-align:left;">
+          <div class="tendencia {{ e.tendencia }}">
+            {% if e.tendencia == 'mejorando' %}&#9650; Mejorando
+            {% elif e.tendencia == 'bajando' %}&#9660; Bajando
+            {% else %}&#9679; Estable{% endif %}
+          </div>
+          <div class="grade-lbl">Rendimiento</div>
+        </div>
+      </div>
+
+      {% if e.proyeccion %}
+<div class="proj-bar">
+  {% set pct = (e.proyeccion.nota_final_estimada / 5 * 100) | round %}
+  {% if e.proyeccion.nota_final_estimada >= 3 %}
+    {% set color = 'var(--ok)' %}
+  {% else %}
+    {% set color = 'var(--danger)' %}
+  {% endif %}
+  <div class="proj-fill" style="width: {{ pct }}%; background: {{ color }};"></div>
+</div>
+{% endif %}
+
+      <div class="actividades">
+        <div class="act-title">Actividades asignadas al estudiante</div>
+        <div class="act-sub">{{ e.num_hechas }} de {{ e.tareas | default([]) | length }} completadas</div>
+        <div id="acts-{{ e.seguimiento_id }}">
+          {% for t in e.tareas or [] %}
+          <div class="act-row{% if t.estado == 'hecha' %} hecha{% endif %}" id="act-{{ t.id }}">
+            <input type="checkbox"{% if t.estado == 'hecha' %} checked{% endif %}
+                   onchange="cambiarActividad('{{ t.id }}', this.checked)">
+            <label>{{ t.descripcion | e }}</label>
+          </div>
+          {% else %}
+          <div class="act-vacio">Aun no hay actividades asignadas a este estudiante.</div>
+          {% endfor %}
+        </div>
+        <div class="add-act">
+          <input type="text" id="nueva-{{ e.seguimiento_id }}"
+                 placeholder="Nueva actividad para el estudiante...">
+          <button class="btn" onclick="agregarActividad('{{ e.seguimiento_id }}')">Asignar</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<script>
+async function cambiarActividad(tareaId, marcada) {
+  const estado = marcada ? 'hecha' : 'por_hacer';
+  try {
+    const resp = await fetch('/tareas/' + tareaId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado })
+    });
+    if (resp.ok) {
+      document.getElementById('act-' + tareaId).classList.toggle('hecha', marcada);
+    } else {
+      alert('No se pudo actualizar la actividad.');
+    }
+  } catch (e) {
+    alert('Error de conexion.');
+  }
+}
+
+async function agregarActividad(seguimientoId) {
+  const input = document.getElementById('nueva-' + seguimientoId);
+  const descripcion = input.value.trim();
+  if (!descripcion) return;
+
+  try {
+    const resp = await fetch('/seguimientos/' + seguimientoId + '/tareas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ descripcion })
+    });
+    const data = await resp.json();
+    if (resp.ok) {
+      const cont = document.getElementById('acts-' + seguimientoId);
+      const vacio = cont.querySelector('.act-vacio');
+      if (vacio) vacio.remove();
+      const fila = document.createElement('div');
+      fila.className = 'act-row';
+      fila.id = 'act-' + data.id;
+      fila.innerHTML =
+        '<input type="checkbox" onchange="cambiarActividad(\'' + data.id + '\', this.checked)"> ' +
+        '<label>' + descripcion.replace(/</g,'&lt;') + '</label>';
+      cont.appendChild(fila);
+      input.value = '';
+    } else {
+      alert(data.error || 'No se pudo agregar la actividad.');
+    }
+  } catch (e) {
+    alert('Error de conexion.');
+  }
+}
+</script>
+</body>
+</html>

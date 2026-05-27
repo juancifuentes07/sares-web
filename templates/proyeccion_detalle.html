@@ -230,6 +230,8 @@ nav {
     <p>Proyección de mejora académica y actividades recomendadas</p>
   </div>
 
+  {% if resultado %}
+
   <div class="card">
     <div class="stats-grid">
       <div class="stat-box">
@@ -247,13 +249,9 @@ nav {
     </div>
 
     {% if resultado.nota_final_estimada >= 3.0 %}
-    <div class="alert">
-      ✓ Con las actividades recomendadas, es posible superar la materia.
-    </div>
+    <div class="alert">✓ Con las actividades recomendadas, es posible superar la materia.</div>
     {% else %}
-    <div class="alert warn">
-      ⚠ La nota estimada sigue siendo de riesgo. Se recomienda apoyo adicional.
-    </div>
+    <div class="alert warn">⚠ La nota estimada sigue siendo de riesgo. Se recomienda apoyo adicional.</div>
     {% endif %}
   </div>
 
@@ -267,11 +265,28 @@ nav {
   <div class="card">
     <div class="section-title">Actividades Recomendadas</div>
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
-      Completa estas {{ resultado.iteraciones }} actividades enfocadas en {{ nombre_materia }} para mejorar tu nota.
+      Completa estas {{ resultado.iteraciones }} actividades para mejorar tu nota en {{ nombre_materia }}.
     </p>
-
     <div class="actividades-grid" id="actividadesContainer"></div>
   </div>
+
+{% else %}
+
+  <div class="card" style="text-align: center; padding: 3rem;">
+    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+    <div class="section-title">Aún no hay nota registrada</div>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+      Registra tu nota del primer corte para ver la proyección y las actividades recomendadas.
+    </p>
+    <a href="/simulacion_ingreso_nota/{{ inscripcion_id }}" 
+       style="background: var(--border); color: white; padding: 0.75rem 1.5rem; 
+              border-radius: 8px; text-decoration: none; font-family: 'Syne', sans-serif; 
+              font-weight: 700;">
+      Ingresar nota →
+    </a>
+  </div>
+
+{% endif %}
 
 </div>
 
@@ -429,8 +444,10 @@ function generarActividades() {
 }
 
 window.addEventListener('load', () => {
+  {% if resultado %}
   dibujarGrafico({{ resultado.historial | tojson }});
   generarActividades();
+  {% endif %}
 });
 // Si llegaron aquí sin pasar por el dashboard, redirigir
 if (!sessionStorage.getItem('desde_dashboard')) {
