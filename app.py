@@ -69,10 +69,15 @@ def proyeccion(inscripcion_id):
     )
 
 # --- Rutas de Renderizado de Plantillas (Frontend) ---
+@app.route('/salir_al_index')
+def salir_al_index():
+    session.clear()  # Borra los datos del usuario del servidor por completo
+    return redirect(url_for('index'))  # Te manda al index.html completamente limpio
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    # Renderiza tu index sin peligro de arrastrar sesiones
+    return render_template('index.html')
 
 @app.route("/simulacion")
 def pagina_simulacion():
@@ -127,7 +132,12 @@ def ingreso_nota_inicial(inscripcion_id):
         inscripcion_id=inscripcion_id,
         materia_nombre=row[1]
     )
-
+@app.before_request
+def limpiar_sesión_en_login():
+    # Si el usuario intenta cargar la página de login, le borramos la sesión de inmediato
+    if request.path == '/login' and request.method == 'GET':
+        session.clear()
+        
 @app.after_request
 def agregar_cabeceras_seguridad(response):
     # Forzamos una política estricta y limpia para OWASP ZAP
@@ -170,6 +180,7 @@ def registrar_estudiante_route():
         session["estudiante_nombre"] = response.get("nombre")
 
     return jsonify(response), status
+
 @app.route("/estudiantes", methods=["GET"])
 def obtener_estudiantes():
     response, status = listar_estudiantes()
