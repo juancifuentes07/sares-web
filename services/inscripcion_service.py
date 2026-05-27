@@ -4,6 +4,8 @@ from models.inscripcion import registrar_inscripcion as db_registrar_inscripcion
 from database.init_db import get_connection
 from utils.exceptions import APIError
 from flask import session
+# Asignación automática de profesor cuando el estudiante queda en riesgo
+from services.asignacion_service import evaluar_y_asignar
 
 
 def registrar_inscripcion(data):
@@ -80,10 +82,20 @@ def actualizar_notas(inscripcion_id, data):
             return {"error": "Inscripción no encontrada"}, 404
 
         conn.commit()
-        return {"mensaje": "Notas actualizadas correctamente"}, 200
+
+        # Si la nota deja al estudiante en riesgo, se le asigna
+        # automáticamente un profesor experto de la materia.
+        resultado = evaluar_y_asignar(inscripcion_id)
+        respuesta = {"mensaje": "Notas actualizadas correctamente"}
+        if resultado["asignado"]:
+            respuesta["asignacion"] = (
+                f"El estudiante quedó en riesgo. Profesor de apoyo asignado: "
+                f"{resultado['profesor']}."
+            )
+        return respuesta, 200
     
     except oracledb.Error as e:
         return {"error": f"Error al actualizar: {str(e)}"}, 500
     finally:
         cursor.close()
-        conn.close()
+        conn.close()    
