@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profesores — SARES</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F1ED;
+  --surface: #cfb2a0;
+  --surface2: #6b1c1cab;
+  --border: #270910;
+  --accent: #ffffff;
+  --text: #710014;
+  --text-muted: #3d0707;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 1.2rem;
+  letter-spacing: 0.12em; color: var(--accent);
+  text-decoration: none;
+}
+.nav-back {
+  font-size: 0.85rem; color: var(--text-muted);
+  text-decoration: none;
+}
+.nav-back:hover { text-decoration: underline; }
+.container { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem; }
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.9rem; font-weight: 800; margin-bottom: 0.3rem;
+}
+.page-sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.prof-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.3rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: block;
+}
+.prof-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(39,9,16,.15);
+}
+.prof-avatar {
+  width: 44px; height: 44px;
+  background: var(--surface2);
+  color: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+.prof-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem; font-weight: 700;
+}
+.prof-doc { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+.prof-materias {
+  margin-top: 0.7rem; font-size: 0.78rem;
+  color: var(--text-muted); line-height: 1.5;
+}
+.prof-materias strong { color: var(--text); }
+.empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 12px; padding: 3rem 2rem;
+  text-align: center; color: var(--text-muted);
+}
+.empty h3 { font-family: 'Syne', sans-serif; margin-bottom: 0.5rem; color: var(--text); }
+.empty code {
+  background: var(--surface2); color: var(--accent);
+  padding: 0.2rem 0.45rem; border-radius: 5px; font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/profesor" class="brand">SARES · Docentes</a>
+  <span class="nav-back">Portal de seguimiento académico</span>
+</header>
+
+<div class="container">
+  <h1 class="page-title">Portal de profesores</h1>
+  <p class="page-sub">Selecciona un profesor para ver el rendimiento de sus estudiantes asignados y los trabajos por realizar.</p>
+
+  {% if profesores | length == 0 %}
+    <div class="empty">
+      <h3>Aún no hay profesores registrados</h3>
+      <p>Ejecuta el script de carga desde la terminal:</p>
+      <p style="margin-top:0.7rem;"><code>python -m scripts.poblar_profesores</code></p>
+    </div>
+  {% else %}
+    <div class="grid">
+      {% for p in profesores %}
+      <a class="prof-card" href="/profesor/{{ p.id }}">
+        <div class="prof-avatar">{{ p.nombre[0] }}{{ p.apellido[0] }}</div>
+        <div class="prof-name">{{ p.nombre }} {{ p.apellido }}</div>
+        <div class="prof-doc">Documento: {{ p.documento }}</div>
+        <div class="prof-materias">
+          <strong>Experto en:</strong>
+          {% if p.materias %}
+            {{ p.materias | map(attribute='nombre') | join(', ') }}
+          {% else %}
+            (sin materias asignadas)
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+</body>
+</html>
