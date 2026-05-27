@@ -1,7 +1,7 @@
 """Rutas de la página del profesor (sin login).
 
 - /profesor          : selector para elegir qué profesor ver.
-- /profesor/<id>     : panel del profesor con sus estudiantes y tareas.
+- /profesor/<id>     : panel del profesor con el rendimiento de sus estudiantes.
 """
 
 from flask import Blueprint, render_template, abort
@@ -22,8 +22,7 @@ def seleccionar_profesor():
 
 @profesor_bp.route("/profesor/<int:profesor_id>")
 def panel_profesor(profesor_id):
-    """Panel de un profesor: estudiantes que acompaña, su rendimiento y
-    los trabajos (tareas) por realizar de cada uno."""
+    """Panel de un profesor: estudiantes que acompaña y su rendimiento."""
     profesor = obtener_profesor_por_id(profesor_id)
     if not profesor:
         abort(404)
@@ -31,8 +30,7 @@ def panel_profesor(profesor_id):
     seguimientos = obtener_seguimientos_de_profesor(profesor_id)
 
     estudiantes = []
-    total_tareas_pendientes = 0
-
+    total_por_hacer = 0
     for s in seguimientos:
         nota_actual  = float(s["nota_actual"])  if s["nota_actual"]  else 0
         nota_inicial = float(s["nota_inicial"]) if s["nota_inicial"] else 0
@@ -46,12 +44,14 @@ def panel_profesor(profesor_id):
         else:
             tendencia = "estable"
 
-        tareas = obtener_tareas_de_seguimiento(s["seguimiento_id"])
-        pendientes = [t for t in tareas if t["estado"] == "pendiente"]
-        total_tareas_pendientes += len(pendientes)
-
         fecha = s["fecha_asignacion"]
         fecha_str = fecha.strftime("%Y-%m-%d") if hasattr(fecha, "strftime") else str(fecha)
+
+        # Actividades que el profesor asignó a este estudiante.
+        tareas = obtener_tareas_de_seguimiento(s["seguimiento_id"])
+        por_hacer = [t for t in tareas if t["estado"] == "por_hacer"]
+        hechas    = [t for t in tareas if t["estado"] == "hecha"]
+        total_por_hacer += len(por_hacer)
 
         estudiantes.append({
             "seguimiento_id": s["seguimiento_id"],
@@ -65,9 +65,11 @@ def panel_profesor(profesor_id):
             "estado": s["estado"],
             "fecha_asignacion": fecha_str,
             "tareas": tareas,
+            "num_por_hacer": len(por_hacer),
+            "num_hechas": len(hechas),
         })
 
     return render_template("panel_profesor.html",
         profesor=profesor,
         estudiantes=estudiantes,
-        total_tareas_pendientes=total_tareas_pendientes)
+        total_por_hacer=total_por_hacer)
