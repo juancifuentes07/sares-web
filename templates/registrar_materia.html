@@ -308,7 +308,7 @@
       <div class="preview" id="preview"></div>
     </div>
 
-    <button type="submit" class="btn" id="btnInscribir">Inscribir materia</button>
+    <button type="submit" class="btn" id="btnInscribir">Continuar</button>
   </form>
 
   <div class="toast" id="toast"></div>
@@ -345,6 +345,7 @@ async function handleSubmit(e) {
 
   const btn = document.getElementById('btnInscribir');
   const materiaId = document.getElementById('materia').value;
+  const materiaText = document.getElementById('materia').options[document.getElementById('materia').selectedIndex].text;
 
   if (!materiaId) {
     showToast('Por favor selecciona una materia.', 'error');
@@ -352,32 +353,32 @@ async function handleSubmit(e) {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Inscribiendo…';
+  btn.textContent = 'Procesando…';
 
   try {
-    const response = await fetch('/inscripciones', {
+    const response = await fetch('/inscripciones/crear', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        materia_id: parseInt(materiaId)
-        // estudiante_id viene de la sesión en el backend
+        materia_id: parseInt(materiaId),
+        materia_nombre: materiaText
       })
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      showToast('✓ Materia inscrita correctamente.', 'success');
-      document.getElementById('materia').value = '';
-      document.getElementById('preview').classList.remove('visible');
+      // Redirigir a simulación
+      window.location.href = `/simulacion_ingreso_nota/${result.inscripcion_id}`;
     } else {
-      showToast(result.error || 'Error al inscribir.', 'error');
+      showToast(result.error || 'Error al procesar.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Continuar';
     }
   } catch (err) {
     showToast('Error de conexión con el servidor.', 'error');
-  } finally {
     btn.disabled = false;
-    btn.textContent = 'Inscribir materia';
+    btn.textContent = 'Continuar';
   }
 
   return false;

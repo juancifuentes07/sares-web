@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Notas - SARES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F2F1ED;
+            --surface: #cfb2a0;
+            --surface2: #6b1c1cab;
+            --border: #7a2238;
+            --accent: #351515d5;
+            --text: #710014;
+            --text-muted: #3d0707;
+            --error: #3b0909;
+            --warn: #ffb347;
+            --success: #a8f0c6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 2.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.03em;
+        }
+
+        input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid #000;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            padding: 0.65rem 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255,255,255,.08);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .btn {
+            width: 100%;
+            background: #351515d5;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.8rem 1.4rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(53, 21, 21, 0.95);
+            transform: translateY(-1px) scale(1.03);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            display: inline-block; /* Permite que el ancho y los márgenes funcionen correctamente */
+            text-align: center;
+            text-decoration: none; /* Quita la línea de enlace subrayado */
+            background: transparent;
+            color: #710014;
+            border: 1px solid #6b1c1cab;
+            margin-top: 1.2rem; /* Más espacio con la caja de resultado */
+            margin-bottom: 0.5rem; /* ¡CLAVE! Deja aire abajo para que no pise el borde de la card */
+            width: 100%;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.8rem 1.4rem;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #351515d5;
+            background: rgba(217, 215, 191, 0.18);
+            transform: translateY(-1px); /* Quitamos el scale(1.03) para que no rompa el contenedor */
+        }
+
+        .resultado {
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            display: none;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+        }
+
+        .resultado.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .resultado-titulo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .resultado-valor {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            padding: 1.2rem;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            border: 2px solid var(--border);
+        }
+
+        .resultado-ok {
+            background: rgba(168, 240, 198, 0.2);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .resultado-error {
+            background: rgba(59, 9, 9, 0.2);
+            color: var(--error);
+            border: 2px solid var(--error);
+        }
+
+        .resultado-warning {
+            background: rgba(255, 179, 71, 0.2);
+            color: var(--warn);
+            border: 2px solid var(--warn);
+        }
+
+        .resultado-mensaje {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .peso-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(0,0,0,.05);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="accesibilidad-bar" style="position: fixed; top: 20px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
+    <button type="button" onclick="cambiarTexto(2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A+</button>
+    <button type="button" onclick="cambiarTexto(-2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A-</button>
+</div>
+
+<script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
+
+<div class="wrapper">
+    <div class="card">
+        <div class="badge">SARES</div>
+        <h1>Calculadora de <span style="color: #351515d5;">Notas</span></h1>
+        <p class="subtitle">¿Qué nota necesitas en los próximos cortes?</p>
+
+        <div class="divider"></div>
+
+        <div class="peso-info">
+            📊 <strong>Pesos:</strong> Corte 1 (30%) + Corte 2 (30%) + Corte 3 (40%)
+        </div>
+
+        <form onsubmit="calcular(event)">
+            <div class="form-group">
+                <label for="corte1">Nota Corte 1</label>
+                <input type="number" id="corte1" min="0" max="5" step="0.1" placeholder="Tu nota actual" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notaMeta">Nota Meta Deseada</label>
+                <input type="number" id="notaMeta" min="0" max="5" step="0.1" placeholder="Ej: 4.0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="corte2">Nota Corte 2 (Opcional)</label>
+                <input type="number" id="corte2" min="0" max="5" step="0.1" placeholder="Deja vacío si aún no tienes">
+            </div>
+
+            <button type="submit" class="btn">Calcular</button>
+        </form>
+
+        <div id="resultado" class="resultado">
+            <div class="resultado-titulo" id="resultadoTitulo"></div>
+            <div class="resultado-valor" id="resultadoValor"></div>
+            <div class="resultado-mensaje" id="resultadoMensaje"></div>
+        </div>
+
+        <a href="/dashboard" class="btn btn-secondary">← Volver al dashboard</a>
+    </div>
+</div>
+
+<script>
+    function calcular(e) {
+        e.preventDefault();
+
+        const c1 = parseFloat(document.getElementById('corte1').value);
+        const meta = parseFloat(document.getElementById('notaMeta').value);
+        const c2Input = document.getElementById('corte2').value.trim();
+
+        if (isNaN(c1) || isNaN(meta) || c1 < 0 || c1 > 5 || meta < 0 || meta > 5) {
+            alert('Por favor ingresa valores válidos (0-5)');
+            return;
+        }
+
+        const resultado = document.getElementById('resultado');
+        const resultadoTitulo = document.getElementById('resultadoTitulo');
+        const resultadoValor = document.getElementById('resultadoValor');
+        const resultadoMensaje = document.getElementById('resultadoMensaje');
+
+        let notaRequerida;
+        let titulo;
+        let mensaje;
+
+        if (c2Input === '') {
+            // C2 vacío: promedio constante para C2 y C3
+            notaRequerida = (meta - (c1 * 0.3)) / 0.7;
+            titulo = 'Promedio Requerido en Cortes 2 y 3';
+            mensaje = `Necesitas un promedio de <strong>${notaRequerida.toFixed(2)}</strong> en ambos cortes`;
+        } else {
+            // C2 con valor: calcular C3 exacto
+            const c2 = parseFloat(c2Input);
+            if (isNaN(c2) || c2 < 0 || c2 > 5) {
+                alert('Nota Corte 2 inválida');
+                return;
+            }
+            notaRequerida = (meta - (c1 * 0.3) - (c2 * 0.3)) / 0.4;
+            titulo = 'Nota Requerida en Corte 3';
+            mensaje = `Necesitas <strong>${notaRequerida.toFixed(2)}</strong> en el último corte`;
+        }
+
+        // Estilos
+        resultadoValor.className = 'resultado-valor';
+        resultado.className = 'resultado show';
+
+        if (notaRequerida <= 0) {
+            resultadoValor.classList.add('resultado-ok');
+            resultadoValor.textContent = '✓ ¡YA PASÓ!';
+            resultadoMensaje.innerHTML = '¡Felicidades! Ya alcanzaste tu meta. 🎉';
+        } else if (notaRequerida > 5) {
+            resultadoValor.classList.add('resultado-error');
+            resultadoValor.textContent = '✗ INALCANZABLE';
+            resultadoMensaje.innerHTML = `Necesitarías ${notaRequerida.toFixed(2)} (máximo 5.0). Ajusta tu meta.`;
+        } else if (notaRequerida > 4.5) {
+            resultadoValor.classList.add('resultado-warning');
+            resultadoValor.textContent = notaRequerida.toFixed(2);
+            resultadoMensaje.innerHTML = mensaje + '<br><strong>¡Requiere alto esfuerzo!</strong>';
+        } else {
+            resultadoValor.classList.add('resultado-ok');
+            resultadoValor.textContent = notaRequerida.toFixed(2);
+            resultadoMensaje.innerHTML = mensaje;
+        }
+
+        resultadoTitulo.textContent = titulo;
+    }
+</script>
+
+</body>
+</html>
