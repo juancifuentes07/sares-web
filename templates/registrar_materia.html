@@ -383,6 +383,19 @@ async function handleSubmit(e) {
 
   return false;
 }
+// Si llegaron aquí sin pasar por el dashboard, redirigir
+if (!sessionStorage.getItem('desde_dashboard')) {
+    window.location.href = '/';
+}
+
+// Al volver atrás desde aquí, que vaya al dashboard (no al index)
+window.onpopstate = function () {
+    window.location.href = '/dashboard';
+};
+
+if (window.history && window.history.pushState) {
+    window.history.pushState(null, null, window.location.href);
+}
 </script>
 </body>
 </html>
