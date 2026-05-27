@@ -55,10 +55,17 @@ def proyeccion(inscripcion_id):
     
     inscripcion_id, nota, nombre_materia, materia_id = row
     
-    if nota is None:
-        raise APIError("El estudiante no tiene registrada la nota del primer corte", 400)
-    
-    resultado = simular_mejora(float(nota))
+    nota = float(nota) if nota is not None else 0.0
+
+    if nota == 0.0:
+        return render_template("proyeccion_detalle.html",
+            nombre_materia=nombre_materia,
+            materia_id=materia_id,
+            inscripcion_id=inscripcion_id,
+            resultado=None,
+            nombre=session.get("estudiante_nombre", "Estudiante")
+        )
+    resultado = simular_mejora(nota)
     
     return render_template("proyeccion_detalle.html",
         nombre_materia=nombre_materia,
