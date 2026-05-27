@@ -593,14 +593,16 @@ nav {
         }
     });
 
-    // Modificar sutilmente el historial para romper la acción por defecto de la flecha
-    if (window.history && window.history.pushState) {
-        window.history.pushState('', null, './dashboard');
-        window.onpopstate = function () {
-            // Al darle atrás, lo mandamos explícitamente al index limpio
-            window.location.href = "/"; 
-        };
-    }
+ // Marcar que el usuario está autenticado en el dashboard
+sessionStorage.setItem('desde_dashboard', 'true');
+
+window.onpopstate = function () {
+    window.location.href = "/";
+};
+
+if (window.history && window.history.pushState) {
+    window.history.pushState(null, null, window.location.href);
+}
 </script>
 </body>
 </html>
