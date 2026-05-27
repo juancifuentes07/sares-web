@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar Nota Inicial - SARES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F2F1ED;
+            --surface: #cfb2a0;
+            --surface2: #6b1c1cab;
+            --border: #7a2238;
+            --accent: #351515d5;
+            --accent-dim: rgba(255,255,255,.08);
+            --accent-glow: rgba(255,255,255,.18);
+            --text: #710014;
+            --text-muted: #3d0707;
+            --error: #3b0909;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 480px;
+            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+
+        .field {
+            margin-bottom: 1.1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.03em;
+        }
+
+        input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid #000;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            padding: 0.65rem 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .btn {
+            width: 100%;
+            background: #351515d5;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.8rem 1.4rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(53, 21, 21, 0.95);
+            transform: translateY(-1px) scale(1.03);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            color: #710014;
+            border: 1px solid #6b1c1cab;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.8rem 1.4rem;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+            gap: 6px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #351515d5;
+            background: rgba(217, 215, 191, 0.18);
+            transform: translateY(-1px) scale(1.03);
+        }
+
+        .toast {
+            margin-top: 1rem;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.success {
+            background: rgba(244, 246, 245, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #a8f0c6;
+            display: flex;
+        }
+
+        .toast.error {
+            background: rgba(248,81,73,0.1);
+            border: 1px solid rgba(248,81,73,0.3);
+            color: var(--error);
+            display: flex;
+        }
+
+        .materia-info {
+            background: var(--accent-dim);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.9rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .materia-info strong {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="badge">SARES</div>
+    <h1>Nota <span style="color: #351515d5;">Inicial</span></h1>
+    <p class="subtitle">Ingresa la nota con la que comienzas este período académico.</p>
+
+    <div class="divider"></div>
+
+    <div class="materia-info">
+        <strong id="materiaNombre"></strong><br>
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Corte 1 (30% de tu calificación final)</span>
+    </div>
+
+    <form onsubmit="handleSubmit(event)">
+        <div class="field">
+            <label for="notaInicial">Nota (0.0 - 5.0)</label>
+            <input type="number" id="notaInicial" min="0" max="5" step="0.1" placeholder="Ej: 2.5" required autofocus>
+        </div>
+
+        <button type="submit" class="btn" id="btnContinuar">Continuar a Simulación</button>
+    </form>
+
+    <div class="toast" id="toast"></div>
+    <a href="/dashboard" class="btn-secondary">← Cancelar</a>
+</div>
+
+<script>
+    const inscripcionId = "{{ inscripcion_id }}";
+    const materiaNombre = "{{ materia_nombre }}";
+
+    // Mostrar nombre de la materia
+    document.getElementById('materiaNombre').textContent = materiaNombre;
+
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast ' + type;
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btnContinuar');
+        const nota = parseFloat(document.getElementById('notaInicial').value);
+
+        if (isNaN(nota) || nota < 0 || nota > 5) {
+            showToast('Por favor ingresa una nota válida (0-5).', 'error');
+            return false;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Procesando…';
+
+        try {
+            const response = await fetch(`/inscripciones/${inscripcionId}/guardar_nota_inicial`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nota_corte1: nota })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Redirigir a proyección (detalles)
+                window.location.href = `/proyeccion/${inscripcionId}`;
+            } else {
+                showToast(result.error || 'Error al guardar.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Continuar a Simulación';
+            }
+        } catch (err) {
+            showToast('Error de conexión con el servidor.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Continuar a Simulación';
+        }
+
+        return false;
+    }
+</script>
+
+</body>
+</html>

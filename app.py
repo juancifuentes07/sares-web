@@ -69,10 +69,15 @@ def proyeccion(inscripcion_id):
     )
 
 # --- Rutas de Renderizado de Plantillas (Frontend) ---
+@app.route('/salir_al_index')
+def salir_al_index():
+    session.clear()  # Borra los datos del usuario del servidor por completo
+    return redirect(url_for('index'))  # Te manda al index.html completamente limpio
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    # Renderiza tu index sin peligro de arrastrar sesiones
+    return render_template('index.html')
 
 @app.route("/simulacion")
 def pagina_simulacion():
@@ -94,6 +99,45 @@ def form_inscripcion():
     materias, _ = listar_materias()
     return render_template("registrar_materia.html", materias=materias)
 
+@app.route("/simuladornotas")
+def calculadora_notas():
+    """Página independiente de calculadora de notas"""
+    return render_template("simuladornotas.html")
+
+@app.route("/simulacion_ingreso_nota/<int:inscripcion_id>")
+def ingreso_nota_inicial(inscripcion_id):
+    """Formulario para ingresar la nota inicial antes de la simulación"""
+    if "estudiante_id" not in session:
+        return redirect(url_for("auth.login"))
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Obtener información de la inscripción y materia
+    cursor.execute("""
+        SELECT i.id, m.nombre
+        FROM inscripciones i
+        JOIN materias m ON i.materia_id = m.id
+        WHERE i.id = :id AND i.estudiante_id = :est_id
+    """, {"id": inscripcion_id, "est_id": session["estudiante_id"]})
+    
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    
+    if not row:
+        return redirect(url_for("auth.dashboard"))
+    
+    return render_template("simulacion_ingreso_nota.html", 
+        inscripcion_id=inscripcion_id,
+        materia_nombre=row[1]
+    )
+@app.before_request
+def limpiar_sesión_en_login():
+    # Si el usuario intenta cargar la página de login, le borramos la sesión de inmediato
+    if request.path == '/login' and request.method == 'GET':
+        session.clear()
+        
 @app.after_request
 def agregar_cabeceras_seguridad(response):
     # Forzamos una política estricta y limpia para OWASP ZAP
@@ -136,6 +180,7 @@ def registrar_estudiante_route():
         session["estudiante_nombre"] = response.get("nombre")
 
     return jsonify(response), status
+
 @app.route("/estudiantes", methods=["GET"])
 def obtener_estudiantes():
     response, status = listar_estudiantes()
@@ -176,6 +221,116 @@ def obtener_materias_route():
 def crear_inscripcion_route():
     response, status = registrar_inscripcion(request.get_json())
     return jsonify(response), status
+
+@app.route("/inscripciones/crear", methods=["POST"])
+def crear_inscripcion_para_simulacion():
+    """Crea una inscripción sin nota inicial, lista para ir a ingreso_nota_inicial"""
+    if "estudiante_id" not in session:
+        return jsonify({"error": "No autenticado"}), 401
+    
+    data = request.get_json()
+    materia_id = data.get("materia_id")
+    
+    if not materia_id:
+        return jsonify({"error": "materia_id requerido"}), 400
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Verificar si ya existe inscripción
+        cursor.execute("""
+            SELECT id FROM inscripciones 
+            WHERE estudiante_id = :est_id AND materia_id = :mat_id
+        """, {"est_id": session["estudiante_id"], "mat_id": materia_id})
+        
+        existing = cursor.fetchone()
+        
+        if existing:
+            # Ya existe, usar esa inscripción
+            inscripcion_id = existing[0]
+            cursor.close()
+            conn.close()
+            return jsonify({"inscripcion_id": inscripcion_id}), 200
+        
+        # Crear nueva inscripción usando el servicio existente
+        cursor.close()
+        conn.close()
+        
+        # Usar el servicio que ya tiene toda la lógica
+        response, status = registrar_inscripcion({
+            "estudiante_id": session["estudiante_id"],
+            "materia_id": materia_id
+        })
+        
+        if status != 201:
+            return jsonify(response), status
+        
+        # La respuesta contiene la inscripción creada
+        # Necesito obtener su ID - vamos a consultarlo
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM inscripciones 
+            WHERE estudiante_id = :est_id AND materia_id = :mat_id
+        """, {"est_id": session["estudiante_id"], "mat_id": materia_id})
+        
+        inscripcion_id = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"inscripcion_id": inscripcion_id}), 201
+        
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/inscripciones/<int:id>/guardar_nota_inicial", methods=["POST"])
+def guardar_nota_inicial(id):
+    """Guarda la nota inicial (Corte 1) de una inscripción"""
+    if "estudiante_id" not in session:
+        return jsonify({"error": "No autenticado"}), 401
+    
+    data = request.get_json()
+    nota_corte1 = data.get("nota_corte1")
+    
+    if nota_corte1 is None:
+        return jsonify({"error": "nota_corte1 requerido"}), 400
+    
+    try:
+        nota_corte1 = float(nota_corte1)
+    except ValueError:
+        return jsonify({"error": "nota_corte1 debe ser un número"}), 400
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Verificar que la inscripción pertenece al estudiante
+        cursor.execute("""
+            SELECT id FROM inscripciones WHERE id = :id AND estudiante_id = :est_id
+        """, {"id": id, "est_id": session["estudiante_id"]})
+        
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Inscripción no encontrada"}), 404
+        
+        # Actualizar la nota
+        cursor.execute("""
+            UPDATE inscripciones SET nota_corte1 = :nota WHERE id = :id
+        """, {"nota": nota_corte1, "id": id})
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"mensaje": "Nota guardada correctamente"}), 200
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/inscripciones", methods=["GET"])
 def obtener_inscripciones_route():

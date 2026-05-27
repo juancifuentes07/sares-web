@@ -19,7 +19,7 @@
   --surface: #cfb2a0;
   --surface2: #6b1c1cab;
   --border: #7a2238;
-  --accent: #ffffff;
+  --accent: #351515d5;
   --accent-dim: rgba(255,255,255,.08);
   --accent-glow: rgba(255,255,255,.18);
   --text: #710014;
@@ -82,7 +82,6 @@ nav {
 
 .btn-logout {
   background: transparent;
-  border: 1px solid var(--border);
   color: var(--text-muted);
   font-family: 'DM Sans', sans-serif;
   font-size: 0.8rem;
@@ -93,7 +92,9 @@ nav {
   transition: border-color 0.2s, color 0.2s;
 }
 
-.btn-logout:hover { border-color: var(--error); color: var(--error); }
+.btn-logout:hover { color: #ffffff;
+    background: rgba(151, 41, 41, 0.95);
+    transform: scale(1.03); }
 
 /* ── LAYOUT ── */
 .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
@@ -176,43 +177,49 @@ nav {
   animation: fadeUp 0.5s 0.05s ease both;
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: white;
-  color:#111;
-  border: none;
-  border-radius: 8px;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 700;
-  padding: 0.65rem 1.4rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-}
+  .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:hover {
+    background: rgba(53, 21, 21, 0.95);
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  }
 
 .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.65rem 1.4rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-}
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-.btn-secondary:hover { border-color: white; background: var(--accent-dim); }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: rgba(217, 215, 191, 0.18);
+    transform: translateY(-1px) scale(1.03);
+  }
 
 /* ── SECTION LABEL ── */
 .section-label {
@@ -383,7 +390,7 @@ nav {
       <div class="user-avatar" id="avatarInitial"></div>
       <span id="navNombre"></span>
     </div>
-    <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    <a href="{{ url_for('salir_al_index') }}" class="btn-logout">Cerrar sesión</a>
   </div>
 </nav>
 
@@ -391,7 +398,6 @@ nav {
 
   <!-- Header -->
   <div class="page-header">
-    <div class="greeting">Bienvenido de nuevo</div>
     <h1>Hola, {{ nombre }} 👋</h1>
     <p>Estado académico de tus materias este semestre.</p>
   </div>
@@ -410,12 +416,12 @@ nav {
     <div class="summary-card ok">
       <div class="summary-label">En buen camino</div>
       <div class="summary-value">{{ estables }}</div>
-      <div class="summary-sub">Nota proyectada ≥ 3.0</div>
+      <div class="summary-sub">Nota actual ≥ 3.0</div>
     </div>
     <div class="summary-card bad">
       <div class="summary-label">En riesgo</div>
       <div class="summary-value">{{ riesgo }}</div>
-      <div class="summary-sub">Requieren atención</div>
+      <div class="summary-sub">Nota actual < 3.0</div>
     </div>
   </div>
 <div class="accesibilidad-bar" style="position: fixed; top: 80px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
@@ -427,7 +433,7 @@ nav {
   <!-- Acciones -->
   <div class="actions-bar">
     <a href="/registrar_materia" class="btn-primary">+ Inscribir materia</a>
-    <a href="/simulacion" class="btn-secondary">Simulación libre</a>
+    <a href="/simuladornotas" class="btn-secondary">🧮 Calculadora de notas</a>
   </div>
 
   <!-- Materias -->
@@ -443,8 +449,6 @@ nav {
           <span class="estado-badge badge-estable">✓ Estable</span>
         {% elif m.estado == "riesgo" %}
           <span class="estado-badge badge-riesgo">⚠ Riesgo</span>
-        {% else %}
-          <span class="estado-badge badge-sin_nota">Sin nota</span>
         {% endif %}
       </div>
 
@@ -576,6 +580,27 @@ nav {
 
   // Ejecutar cuando carga la página
   window.addEventListener('load', mostrarNotasSimuladas);
+  // Detectar si la página se está cargando desde el historial (flechas Atrás/Adelante)
+    window.addEventListener("pageshow", function (event) {
+        var historia = event.persisted || 
+                       (typeof window.performance != "undefined" && 
+                        window.performance.navigation.type === 2);
+        
+        if (historia) {
+            // Si el usuario intentó volver al dashboard usando la flecha adelante,
+            // lo obligamos a ir a la ruta de Flask que verifica si de verdad tiene permiso
+            window.location.reload(true);
+        }
+    });
+
+    // Modificar sutilmente el historial para romper la acción por defecto de la flecha
+    if (window.history && window.history.pushState) {
+        window.history.pushState('', null, './dashboard');
+        window.onpopstate = function () {
+            // Al darle atrás, lo mandamos explícitamente al index limpio
+            window.location.href = "/"; 
+        };
+    }
 </script>
 </body>
 </html>

@@ -66,7 +66,7 @@ def dashboard():
 
         if nota == 0:
             estado = "sin_nota"
-        elif proyeccion and proyeccion["nota_final_estimada"] >= 3.0:
+        elif nota >= 3.0:
             estado = "estable"
         else:
             estado = "riesgo"

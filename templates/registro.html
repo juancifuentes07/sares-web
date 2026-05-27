@@ -146,21 +146,28 @@ select:focus{
 
 .btn{
   width:100%;
-  padding:.8rem;
+  padding:0.8rem 1.4rem;
   border:none;
   border-radius:8px;
-  background:white;
-  color:#111;
+  background:#351515d5;
+  color:#ffffff;
   font-weight:700;
   cursor:pointer;
   font-family:'Syne',sans-serif;
+  font-size:0.95rem;
   margin-top:.4rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  text-decoration:none;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 
 .btn:hover{
-  opacity:.9;
-}
-
+  background: rgba(53, 21, 21, 0.95);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 .toast{
   margin-top:1rem;
   padding:.8rem;
@@ -266,10 +273,6 @@ select:focus{
   </form>
 
   <div class="toast" id="toast"></div>
-
-  <div class="footer-link">
-    ¿Ya tienes cuenta? <a href="/simulacion">Ir a simulación →</a>
-  </div>
 
 </div>
 
