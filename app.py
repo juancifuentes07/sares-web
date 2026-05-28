@@ -11,6 +11,11 @@ from utils.exceptions import APIError
 from routes.materia_routes import materia_bp
 from routes.auth_routes import auth_bp
 
+from routes.materia_routes import materia_bp
+from routes.auth_routes import auth_bp
+from routes.profesor_routes import profesor_bp
+from routes.tarea_routes import tarea_bp
+
 app = Flask(__name__)
 
 app.secret_key = "sares_secret_2025"
@@ -26,7 +31,8 @@ app.json.ensure_ascii = False
 app.register_blueprint(materia_bp)
 
 app.register_blueprint(auth_bp)
-
+app.register_blueprint(profesor_bp)
+app.register_blueprint(tarea_bp)
 # --- Rutas de Lógica Específica ---
 
 @app.route("/proyeccion/<int:inscripcion_id>")
