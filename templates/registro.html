@@ -7,12 +7,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Estudiante - SARES</title>
-<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SARES">
-<!--<link rel="apple-touch-icon" href="/static/images/logo.png">--> 
-
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
@@ -30,11 +24,7 @@
   --success:#ffffff;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{ margin:0; padding:0; box-sizing:border-box; }
 
 body{
   background:var(--bg);
@@ -56,9 +46,7 @@ body{
   padding:2.3rem;
 }
 
-.header{
-  margin-bottom:1.8rem;
-}
+.header{ margin-bottom:1.8rem; }
 
 .badge{
   display:inline-block;
@@ -70,39 +58,17 @@ body{
   margin-bottom:1rem;
 }
 
-h1{
-  font-family:'Syne',sans-serif;
-  font-size:1.8rem;
-}
+h1{ font-family:'Syne',sans-serif; font-size:1.8rem; }
 
-.subtitle{
-  color:var(--text-muted);
-  font-size:.9rem;
-  margin-top:.4rem;
-}
+.subtitle{ color:var(--text-muted); font-size:.9rem; margin-top:.4rem; }
 
-.divider{
-  height:1px;
-  background:var(--border);
-  margin:1.5rem 0;
-}
+.divider{ height:1px; background:var(--border); margin:1.5rem 0; }
 
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:.8rem;
-}
+.row{ display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
 
-.field{
-  margin-bottom:1rem;
-}
+.field{ margin-bottom:1rem; }
 
-label{
-  display:block;
-  font-size:.8rem;
-  color:var(--text-muted);
-  margin-bottom:.45rem;
-}
+label{ display:block; font-size:.8rem; color:var(--text-muted); margin-bottom:.45rem; }
 
 input,select{
   width:100%;
@@ -115,8 +81,7 @@ input,select{
   outline:none;
 }
 
-input:focus,
-select:focus{
+input:focus, select:focus{
   border-color:white;
   box-shadow:0 0 0 3px var(--accent-glow);
 }
@@ -128,21 +93,15 @@ select:focus{
   padding:1rem;
   border-radius:10px;
   border:1px solid var(--border);
-  background:rgba(243, 238, 238, 0.938);
+  background:rgba(243,238,238,0.938);
   cursor:pointer;
 }
 
-.checkbox-field input{
-  width:18px;
-  height:18px;
-  margin-top:3px;
-}
+.checkbox-field input{ width:18px; height:18px; margin-top:3px; }
 
-.checkbox-label{
-  font-size:.78rem;
-  line-height:1.5;
-  color:var(--text-muted);
-}
+.checkbox-label{ font-size:.78rem; line-height:1.5; color:var(--text-muted); }
+
+.checkbox-label a{ color:var(--border); font-weight:600; text-decoration:underline; cursor:pointer; }
 
 .btn{
   width:100%;
@@ -165,9 +124,11 @@ select:focus{
 }
 
 .btn:hover{
-  background: rgba(53, 21, 21, 0.95);
+  background: rgba(53,21,21,0.95);
   transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
 .toast{
   margin-top:1rem;
   padding:.8rem;
@@ -176,28 +137,155 @@ select:focus{
   font-size:.88rem;
 }
 
-.toast.success{
-  background:rgba(255,255,255,.08);
-  color:white;
-  display:flex;
+.toast.success{ background:rgba(255,255,255,.08); color:white; display:flex; }
+.toast.error{ background:rgba(255,80,80,.10); color:#ffb3b3; display:flex; }
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  backdrop-filter:blur(3px);
 }
 
-.toast.error{
-  background:rgba(255,80,80,.10);
-  color:#ffb3b3;
+.modal-overlay.active{ display:flex; }
+
+.modal{
+  background:#f5ede8;
+  border:2px solid var(--border);
+  border-radius:16px;
+  width:100%;
+  max-width:520px;
+  max-height:85vh;
   display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  animation: modalIn 0.25s ease;
 }
 
-.footer-link{
-  margin-top:1.5rem;
-  text-align:center;
-  font-size:.82rem;
+@keyframes modalIn{
+  from{ opacity:0; transform:translateY(20px) scale(0.97); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+.modal-header{
+  padding:1.2rem 1.5rem 1rem;
+  border-bottom:1px solid var(--border);
+  background:#e8d5cb;
+  flex-shrink:0;
+}
+
+.modal-header h2{
+  font-family:'Syne',sans-serif;
+  font-size:1.1rem;
+  color:var(--text);
+}
+
+.modal-header p{
+  font-size:.75rem;
   color:var(--text-muted);
+  margin-top:.25rem;
 }
 
-.footer-link a{
+.modal-body{
+  flex:1;
+  overflow-y:auto;
+  padding:1.3rem 1.5rem;
+  font-size:.83rem;
+  line-height:1.7;
+  color:#2a0505;
+  scroll-behavior:smooth;
+}
+
+.modal-body h3{
+  font-family:'Syne',sans-serif;
+  font-size:.9rem;
+  color:var(--border);
+  margin:1.2rem 0 .4rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.modal-body p{ margin-bottom:.7rem; }
+
+.modal-body ul{ padding-left:1.2rem; margin-bottom:.7rem; }
+.modal-body ul li{ margin-bottom:.3rem; }
+
+/* barra de progreso de scroll */
+.scroll-progress-bar{
+  height:3px;
+  background:var(--border);
+  width:0%;
+  transition:width 0.15s;
+  flex-shrink:0;
+}
+
+.scroll-hint{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.55rem 1.5rem;
+  font-size:.72rem;
+  color:var(--text-muted);
+  background:#e8d5cb;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+  transition: opacity 0.3s;
+}
+
+.scroll-hint.hidden{ opacity:0; pointer-events:none; }
+
+.scroll-hint svg{ flex-shrink:0; }
+
+.modal-footer{
+  padding:.9rem 1.5rem;
+  border-top:1px solid var(--border);
+  background:#e8d5cb;
+  display:flex;
+  gap:.7rem;
+  flex-shrink:0;
+}
+
+.btn-modal{
+  flex:1;
+  padding:.65rem 1rem;
+  border:none;
+  border-radius:8px;
+  font-family:'Syne',sans-serif;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn-cancel{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--border);
+}
+
+.btn-cancel:hover{ background:rgba(122,34,56,.08); }
+
+.btn-accept{
+  background:#351515;
   color:white;
-  text-decoration:none;
+}
+
+.btn-accept:disabled{
+  background:#9e8a8a;
+  cursor:not-allowed;
+  opacity:0.6;
+}
+
+.btn-accept:not(:disabled):hover{
+  background:#560c0c;
+  transform:translateY(-1px);
 }
 </style>
 </head>
@@ -205,7 +293,6 @@ select:focus{
 <body>
 
 <div class="card">
-
   <div class="header">
     <div class="badge">SARES</div>
     <h1>Registro de Estudiante</h1>
@@ -224,30 +311,24 @@ select:focus{
     <div class="row">
       <div class="field">
         <label>Nombre</label>
-        <input type="text" id="nombre" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+        <input type="text" id="nombre" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'')" required>
       </div>
-
       <div class="field">
         <label>Apellido</label>
-        <input type="text" id="apellido" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+        <input type="text" id="apellido" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'')" required>
       </div>
     </div>
-<div class="accesibilidad-bar" style="position: fixed; top: 80px; right: 15px; z-index: 9999; display: flex; gap: 5px;">
-    <button type="button" onclick="cambiarTexto(2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A+</button>
-    <button type="button" onclick="cambiarTexto(-2)" style="background: #470404; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">A-</button>
-</div>
 
-<script src="{{ url_for('static', filename='js/accesibilidad.js') }}"></script>
     <div class="field">
       <label>Número de documento</label>
-      <input type="text" id="documento" maxlength="11" pattern="\d{7,11}" title="El documento debe tener entre 7 y 11 números" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+      <input type="text" id="documento" maxlength="11" pattern="\d{7,11}" oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
     </div>
 
     <div class="field">
       <label>Contraseña</label>
       <input type="password" id="contrasena" required oninput="validarContrasena(this.value)">
-      <div id="passIndicador" style="margin-top:0.5rem; display:none;">
-        <div id="passReq" style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.4rem;"></div>
+      <div id="passIndicador" style="margin-top:0.5rem;display:none;">
+        <div id="passReq" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.4rem;"></div>
       </div>
     </div>
 
@@ -259,160 +340,259 @@ select:focus{
       </select>
     </div>
 
-    <!-- CHECKBOX -->
+    <!-- CHECKBOX con modal -->
     <div class="checkbox-field" onclick="document.getElementById('acepta_datos').click()">
       <input type="checkbox" id="acepta_datos" onclick="event.stopPropagation();">
-
       <div class="checkbox-label">
-      Acepto la política de <a href="{{ url_for('static', filename='ley_1581_de_2012.pdf') }}" target="_blank" onclick="event.stopPropagation();">tratamiento de datos personales</a> bajo Ley 1581 de 2012.      
-    </div>
+        Acepto la
+        <a onclick="event.stopPropagation(); abrirModal();">Política de Tratamiento de Datos Personales</a>
+        de SARES, conforme a la Ley 1581 de 2012.
+      </div>
     </div>
 
     <button class="btn" id="btnRegistrar">Crear cuenta</button>
-
   </form>
 
   <div class="toast" id="toast"></div>
+</div>
 
+<!-- ===== MODAL POLÍTICA ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModalSiAfuera(event)">
+  <div class="modal" id="modalContenido">
+
+    <div class="modal-header">
+      <h2>📋 Política de Tratamiento de Datos Personales</h2>
+      <p>SARES — Sistema Académico de Registro de Estudiantes · Ley 1581 de 2012</p>
+    </div>
+
+    <div class="scroll-progress-bar" id="scrollBar"></div>
+
+    <div class="modal-body" id="modalBody" onscroll="actualizarScroll()">
+
+      <h3>1. Responsable del Tratamiento</h3>
+      <p><strong>SARES (Sistema Académico de Registro de Estudiantes)</strong> es el responsable del tratamiento de los datos personales recopilados durante el proceso de registro y uso de la plataforma académica. Para consultas o reclamos puede escribir a: <em>soporte@sares.edu.co</em>.</p>
+
+      <h3>2. Datos que recopilamos</h3>
+      <p>Al registrarte en SARES recopilamos los siguientes datos personales:</p>
+      <ul>
+        <li>Nombre y apellido</li>
+        <li>Correo electrónico institucional</li>
+        <li>Número de documento de identidad</li>
+        <li>Carrera académica</li>
+        <li>Contraseña (almacenada de forma cifrada)</li>
+      </ul>
+
+      <h3>3. Finalidad del tratamiento</h3>
+      <p>Tus datos serán utilizados exclusivamente para:</p>
+      <ul>
+        <li>Gestionar tu cuenta e identidad dentro del sistema académico SARES.</li>
+        <li>Registrar y consultar tu historial académico, notas y materias.</li>
+        <li>Enviar comunicaciones institucionales relacionadas con tu proceso académico.</li>
+        <li>Cumplir con obligaciones legales y reglamentarias de la institución.</li>
+        <li>Garantizar la seguridad e integridad del sistema y sus usuarios.</li>
+      </ul>
+      <p>Tus datos <strong>no serán vendidos, cedidos ni compartidos con terceros</strong> para fines comerciales o ajenos a los académicos, salvo orden judicial o requerimiento de autoridad competente.</p>
+
+      <h3>4. Base legal y autorización</h3>
+      <p>De conformidad con el <strong>Artículo 9° de la Ley 1581 de 2012</strong>, el tratamiento de tus datos personales requiere tu autorización previa, expresa e informada. Al marcar la casilla de aceptación estás otorgando dicho consentimiento de manera voluntaria y consciente.</p>
+
+      <h3>5. Tus derechos como titular</h3>
+      <p>Conforme al <strong>Artículo 8° de la Ley 1581 de 2012</strong>, tienes los siguientes derechos:</p>
+      <ul>
+        <li><strong>Conocer</strong> los datos que SARES tiene sobre ti en cualquier momento.</li>
+        <li><strong>Actualizar y rectificar</strong> datos incompletos, inexactos o desactualizados.</li>
+        <li><strong>Solicitar la supresión</strong> de tus datos cuando el tratamiento no sea necesario o vulnere tus derechos.</li>
+        <li><strong>Revocar</strong> la autorización de tratamiento en cualquier momento.</li>
+        <li><strong>Acceder gratuitamente</strong> a tus datos personales almacenados en el sistema.</li>
+        <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC) si consideras que tus derechos han sido vulnerados.</li>
+      </ul>
+
+      <h3>6. Seguridad de la información</h3>
+      <p>SARES adoptará las medidas técnicas, humanas y administrativas necesarias para proteger tus datos personales contra acceso no autorizado, pérdida, alteración o divulgación indebida, conforme al <strong>Artículo 17 de la Ley 1581 de 2012</strong>.</p>
+
+      <h3>7. Confidencialidad</h3>
+      <p>Toda persona que en SARES intervenga en el tratamiento de datos personales está obligada a guardar la reserva y confidencialidad de la información, incluso después de finalizada su relación con el sistema.</p>
+
+      <h3>8. Procedimiento para ejercer tus derechos</h3>
+      <p>Para ejercer cualquiera de tus derechos, puedes:</p>
+      <ul>
+        <li>Enviar una solicitud escrita a <em>soporte@sares.edu.co</em> indicando tu nombre completo, documento de identidad y la solicitud específica.</li>
+        <li>SARES dará respuesta dentro de los <strong>10 días hábiles</strong> siguientes a la recepción de la consulta, o <strong>15 días hábiles</strong> en caso de reclamo, según el Artículo 14 y 15 de la Ley 1581 de 2012.</li>
+      </ul>
+
+      <h3>9. Vigencia</h3>
+      <p>Esta política está vigente desde la fecha de tu registro en SARES. Cualquier modificación será informada oportunamente a través de los canales de comunicación institucionales.</p>
+
+      <p style="margin-top:1.2rem; font-style:italic; font-size:.78rem; color:#5a2020;">
+        Al aceptar esta política confirmas que has leído, comprendido y consentido el tratamiento de tus datos personales por parte de SARES, de conformidad con la Ley Estatutaria 1581 de 2012 y sus decretos reglamentarios.
+      </p>
+
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Desplázate hasta el final para poder aceptar
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-modal btn-accept" id="btnAceptarPolitica" disabled onclick="aceptarPolitica()">
+        He leído y acepto
+      </button>
+    </div>
+
+  </div>
 </div>
 
 <script>
-
+/* ---- Extraer nombre/apellido del correo ---- */
 function extraerNombreApellido(correo) {
   if (!correo || !correo.includes('@')) return;
-  
-  // Extraer la parte antes del @
-  const parteCorreo = correo.split('@')[0];
-  
-  // Separar por guión
-  const partes = parteCorreo.split('-');
-  
+  const partes = correo.split('@')[0].split('-');
   if (partes.length >= 2) {
-    // Capitalizar primera letra
-    const nombre = partes[0].charAt(0).toUpperCase() + partes[0].slice(1);
-    const apellido = partes[1].charAt(0).toUpperCase() + partes[1].slice(1);
-    
-    document.getElementById('nombre').value = nombre;
-    document.getElementById('apellido').value = apellido;
+    document.getElementById('nombre').value = partes[0].charAt(0).toUpperCase() + partes[0].slice(1);
+    document.getElementById('apellido').value = partes[1].charAt(0).toUpperCase() + partes[1].slice(1);
   }
 }
 
-async function registrar(){
-
-    const btn = document.getElementById("btnRegistrar");
-
-    const data = {
-        correo: document.getElementById("correo").value.trim(),
-        nombre: document.getElementById("nombre").value.trim(),
-        apellido: document.getElementById("apellido").value.trim(),
-        documento: document.getElementById("documento").value.trim(),
-        carrera: document.getElementById("carrera").value,
-        acepta_tratamiento: document.getElementById("acepta_datos").checked,
-        password: document.getElementById("contrasena").value
-    };
-
-    // Validar campos vacíos
-    const camposFaltantes = [];
-    if (!data.correo) camposFaltantes.push("Correo Institucional");
-    if (!data.nombre) camposFaltantes.push("Nombre");
-    if (!data.apellido) camposFaltantes.push("Apellido");
-    if (!data.documento) camposFaltantes.push("Número de documento");
-    if (!data.password) camposFaltantes.push("Contraseña");
-    if (!data.carrera) camposFaltantes.push("Carrera");
-
-    if (camposFaltantes.length > 0) {
-        showToast("Faltan los siguientes campos: " + camposFaltantes.join(", "), "error");
-        return;
-    }
-
-    if(!data.acepta_tratamiento){
-        showToast("Debe aceptar tratamiento de datos.","error");
-        return;
-    }
-
-    // Validar contraseña
-    const contrasena = document.getElementById("contrasena").value;
-    const erroresPass = [];
-
-    if (contrasena.length < 8)              erroresPass.push("mínimo 8 caracteres");
-    if (!/[A-Z]/.test(contrasena))          erroresPass.push("una mayúscula");
-    if (!/[a-z]/.test(contrasena))          erroresPass.push("una minúscula");
-    if (!/\d/.test(contrasena))             erroresPass.push("un número");
-    if (!/[!@#$%^&*(),.?":{}|<>\-_]/.test(contrasena)) erroresPass.push("un carácter especial");
-
-    if (erroresPass.length > 0) {
-        showToast("La contraseña requiere: " + erroresPass.join(", "), "error");
-        return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = "Registrando...";
-
-    try{
-
-        const response = await fetch("/estudiantes",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if(response.ok){
-            window.location.href = "/dashboard";
-        }else{
-            showToast(result.error || "Error en registro.","error");
-        }
-
-    }catch(e){
-        showToast("Error de conexión con servidor.","error");
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = "Crear cuenta";
+/* ---- Modal ---- */
+function abrirModal() {
+  document.getElementById('modalOverlay').classList.add('active');
+  // Resetear scroll y botón
+  const body = document.getElementById('modalBody');
+  body.scrollTop = 0;
+  actualizarScroll();
 }
 
-function showToast(msg,type){
+function cerrarModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
 
-    const toast = document.getElementById("toast");
+function cerrarModalSiAfuera(e) {
+  if (e.target === document.getElementById('modalOverlay')) cerrarModal();
+}
 
-    toast.innerHTML = msg;
-    toast.className = "toast " + type;
-    toast.style.display = "flex";
+function aceptarPolitica() {
+  document.getElementById('acepta_datos').checked = true;
+  cerrarModal();
+}
 
-    setTimeout(()=>{
-        toast.style.display = "none";
-    },4000);
+function actualizarScroll() {
+  const body = document.getElementById('modalBody');
+  const bar = document.getElementById('scrollBar');
+  const hint = document.getElementById('scrollHint');
+  const btnAceptar = document.getElementById('btnAceptarPolitica');
+
+  const scrolled = body.scrollTop;
+  const total = body.scrollHeight - body.clientHeight;
+  const pct = total > 0 ? (scrolled / total) * 100 : 100;
+
+  bar.style.width = pct + '%';
+
+  // Se considera "leído" cuando llega al 95% del scroll
+  const leido = pct >= 95;
+  btnAceptar.disabled = !leido;
+  if (leido) hint.classList.add('hidden');
+  else hint.classList.remove('hidden');
+}
+
+/* ---- Registro ---- */
+async function registrar() {
+  const btn = document.getElementById("btnRegistrar");
+
+  const data = {
+    correo: document.getElementById("correo").value.trim(),
+    nombre: document.getElementById("nombre").value.trim(),
+    apellido: document.getElementById("apellido").value.trim(),
+    documento: document.getElementById("documento").value.trim(),
+    carrera: document.getElementById("carrera").value,
+    acepta_tratamiento: document.getElementById("acepta_datos").checked,
+    password: document.getElementById("contrasena").value
+  };
+
+  const camposFaltantes = [];
+  if (!data.correo) camposFaltantes.push("Correo Institucional");
+  if (!data.nombre) camposFaltantes.push("Nombre");
+  if (!data.apellido) camposFaltantes.push("Apellido");
+  if (!data.documento) camposFaltantes.push("Número de documento");
+  if (!data.password) camposFaltantes.push("Contraseña");
+  if (!data.carrera) camposFaltantes.push("Carrera");
+
+  if (camposFaltantes.length > 0) {
+    showToast("Faltan los siguientes campos: " + camposFaltantes.join(", "), "error");
+    return;
+  }
+
+  if (!data.acepta_tratamiento) {
+    showToast("Debe aceptar la política de tratamiento de datos.", "error");
+    return;
+  }
+
+  const contrasena = data.password;
+  const erroresPass = [];
+  if (contrasena.length < 8)              erroresPass.push("mínimo 8 caracteres");
+  if (!/[A-Z]/.test(contrasena))          erroresPass.push("una mayúscula");
+  if (!/[a-z]/.test(contrasena))          erroresPass.push("una minúscula");
+  if (!/\d/.test(contrasena))             erroresPass.push("un número");
+  if (!/[!@#$%^&*(),.?":{}|<>\-_]/.test(contrasena)) erroresPass.push("un carácter especial");
+
+  if (erroresPass.length > 0) {
+    showToast("La contraseña requiere: " + erroresPass.join(", "), "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = "Registrando...";
+
+  try {
+    const response = await fetch("/estudiantes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (response.ok) {
+      window.location.href = "/dashboard";
+    } else {
+      showToast(result.error || "Error en registro.", "error");
+    }
+  } catch(e) {
+    showToast("Error de conexión con servidor.", "error");
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = "Crear cuenta";
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById("toast");
+  toast.innerHTML = msg;
+  toast.className = "toast " + type;
+  toast.style.display = "flex";
+  setTimeout(() => { toast.style.display = "none"; }, 4000);
 }
 
 function validarContrasena(val) {
   const indicador = document.getElementById('passIndicador');
   const req = document.getElementById('passReq');
-  
   if (!val) { indicador.style.display = 'none'; return; }
   indicador.style.display = 'block';
-
   const reglas = [
-    { texto: '8+ chars',    ok: val.length >= 8 },
-    { texto: 'Mayúscula',   ok: /[A-Z]/.test(val) },
-    { texto: 'Minúscula',   ok: /[a-z]/.test(val) },
-    { texto: 'Número',      ok: /\d/.test(val) },
-    { texto: 'Especial',    ok: /[!@#$%^&*(),.?":{}|<>\-_]/.test(val) },
+    { texto: '8+ chars',  ok: val.length >= 8 },
+    { texto: 'Mayúscula', ok: /[A-Z]/.test(val) },
+    { texto: 'Minúscula', ok: /[a-z]/.test(val) },
+    { texto: 'Número',    ok: /\d/.test(val) },
+    { texto: 'Especial',  ok: /[!@#$%^&*(),.?":{}|<>\-_]/.test(val) },
   ];
-
   req.innerHTML = reglas.map(r => `
-    <span style="
-      font-size:0.7rem; padding:2px 8px; border-radius:20px;
-      background:${r.ok ? 'rgba(168,240,198,0.12)' : 'rgba(255,255,255,0.05)'};
-      border:1px solid ${r.ok ? 'rgba(168,240,198,0.4)' : 'rgba(255,255,255,0.15)'};
-      color:${r.ok ? '#a8f0c6' : '#f0d7de'};
-    ">${r.ok ? '✓' : '·'} ${r.texto}</span>
+    <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;
+      background:${r.ok?'rgba(168,240,198,0.12)':'rgba(255,255,255,0.05)'};
+      border:1px solid ${r.ok?'rgba(168,240,198,0.4)':'rgba(255,255,255,0.15)'};
+      color:${r.ok?'#a8f0c6':'#f0d7de'};">
+      ${r.ok?'✓':'·'} ${r.texto}
+    </span>
   `).join('');
 }
-
-
 </script>
 
 </body>
