@@ -359,20 +359,27 @@ def guardar_nota_inicial(id):
         """, {"nota": nota_corte1, "id": id})
 
         conn.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
 
-    # Si la nota deja al estudiante en riesgo, se le asigna
-    # automáticamente un profesor experto de la materia.
-    from services.asignacion_service import evaluar_y_asignar
-    resultado = evaluar_y_asignar(id)
+    # Asignación de profesor: va aparte y protegida, para que un fallo aquí
+    # NUNCA tumbe el guardado de la nota ni la respuesta al navegador.
     respuesta = {"mensaje": "Nota guardada correctamente"}
-    if resultado.get("asignado"):
-        respuesta["asignacion"] = (
-            f"Quedaste en riesgo en esta materia. Se te asignó al profesor "
-            f"{resultado['profesor']} para acompañar tu proceso."
-        )
+    try:
+        from services.asignacion_service import evaluar_y_asignar
+        resultado = evaluar_y_asignar(id)
+        if resultado.get("asignado"):
+            respuesta["asignacion"] = (
+                f"Quedaste en riesgo en esta materia. Se te asignó al profesor "
+                f"{resultado['profesor']} para acompañar tu proceso."
+            )
+    except Exception as e:
+        # Si la asignación falla, lo registramos pero NO rompemos la respuesta.
+        print("Aviso: no se pudo asignar profesor automáticamente:", e)
+
     return jsonify(respuesta), 200
 
 @app.route("/inscripciones", methods=["GET"])
