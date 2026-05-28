@@ -341,12 +341,15 @@ input:focus, select:focus{
     </div>
 
     <!-- CHECKBOX con modal -->
-    <div class="checkbox-field" onclick="document.getElementById('acepta_datos').click()">
-      <input type="checkbox" id="acepta_datos" onclick="event.stopPropagation();">
+    <div class="checkbox-field">
+      <input type="checkbox" id="acepta_datos" disabled style="cursor:not-allowed; opacity:0.45;">
       <div class="checkbox-label">
         Acepto la
-        <a onclick="event.stopPropagation(); abrirModal();">Política de Tratamiento de Datos Personales</a>
+        <a onclick="abrirModal();">Política de Tratamiento de Datos Personales</a>
         de SARES, conforme a la Ley 1581 de 2012.
+        <span style="display:block; margin-top:4px; font-size:.72rem; color:#8b3a3a;">
+          ↑ Debes leer la política completa para poder aceptar
+        </span>
       </div>
     </div>
 
@@ -473,7 +476,9 @@ function cerrarModalSiAfuera(e) {
 }
 
 function aceptarPolitica() {
-  document.getElementById('acepta_datos').checked = true;
+  const checkbox = document.getElementById('acepta_datos');
+  checkbox.disabled = false;
+  checkbox.checked = true;
   cerrarModal();
 }
 
