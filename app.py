@@ -55,32 +55,57 @@ def proyeccion(inscripcion_id):
     row = cursor.fetchone()
     cursor.close()
     conn.close()
-
+ 
     if not row:
         raise APIError("Inscripción no encontrada", 404)
     
     inscripcion_id, nota, nombre_materia, materia_id = row
-    
+ 
     nota = float(nota) if nota is not None else 0.0
-
+ 
+    # Buscar si esta inscripción tiene un profesor de apoyo asignado.
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT p.nombre, p.apellido, s.estado, s.fecha_asignacion
+        FROM seguimientos s
+        JOIN profesores p ON s.profesor_id = p.id
+        WHERE s.inscripcion_id = :id
+    """, {"id": inscripcion_id})
+    fila_prof = cursor.fetchone()
+    cursor.close()
+    conn.close()
+ 
+    profesor_asignado = None
+    if fila_prof:
+        fecha = fila_prof[3]
+        fecha_str = fecha.strftime("%Y-%m-%d") if hasattr(fecha, "strftime") else str(fecha)
+        profesor_asignado = {
+            "nombre": f"{fila_prof[0]} {fila_prof[1]}",
+            "estado": fila_prof[2],
+            "fecha": fecha_str,
+        }
+ 
     if nota == 0.0:
         return render_template("proyeccion_detalle.html",
             nombre_materia=nombre_materia,
             materia_id=materia_id,
             inscripcion_id=inscripcion_id,
             resultado=None,
+            profesor_asignado=profesor_asignado,
             nombre=session.get("estudiante_nombre", "Estudiante")
         )
     resultado = simular_mejora(nota)
-    
+ 
     return render_template("proyeccion_detalle.html",
         nombre_materia=nombre_materia,
         materia_id=materia_id,
         inscripcion_id=inscripcion_id,
         resultado=resultado,
+        profesor_asignado=profesor_asignado,
         nombre=session.get("estudiante_nombre", "Estudiante")
     )
-
+ 
 # --- Rutas de Renderizado de Plantillas (Frontend) ---
 @app.route('/salir_al_index')
 def salir_al_index():
@@ -304,46 +329,51 @@ def guardar_nota_inicial(id):
     """Guarda la nota inicial (Corte 1) de una inscripción"""
     if "estudiante_id" not in session:
         return jsonify({"error": "No autenticado"}), 401
-    
+
     data = request.get_json()
     nota_corte1 = data.get("nota_corte1")
-    
+
     if nota_corte1 is None:
         return jsonify({"error": "nota_corte1 requerido"}), 400
-    
+
     try:
         nota_corte1 = float(nota_corte1)
     except ValueError:
         return jsonify({"error": "nota_corte1 debe ser un número"}), 400
-    
+
     conn = get_connection()
     cursor = conn.cursor()
-    
+
     try:
         # Verificar que la inscripción pertenece al estudiante
         cursor.execute("""
             SELECT id FROM inscripciones WHERE id = :id AND estudiante_id = :est_id
         """, {"id": id, "est_id": session["estudiante_id"]})
-        
+
         if not cursor.fetchone():
-            cursor.close()
-            conn.close()
             return jsonify({"error": "Inscripción no encontrada"}), 404
-        
+
         # Actualizar la nota
         cursor.execute("""
             UPDATE inscripciones SET nota_corte1 = :nota WHERE id = :id
         """, {"nota": nota_corte1, "id": id})
-        
+
         conn.commit()
+    finally:
         cursor.close()
         conn.close()
-        
-        return jsonify({"mensaje": "Nota guardada correctamente"}), 200
-    except Exception as e:
-        cursor.close()
-        conn.close()
-        return jsonify({"error": str(e)}), 500
+
+    # Si la nota deja al estudiante en riesgo, se le asigna
+    # automáticamente un profesor experto de la materia.
+    from services.asignacion_service import evaluar_y_asignar
+    resultado = evaluar_y_asignar(id)
+    respuesta = {"mensaje": "Nota guardada correctamente"}
+    if resultado.get("asignado"):
+        respuesta["asignacion"] = (
+            f"Quedaste en riesgo en esta materia. Se te asignó al profesor "
+            f"{resultado['profesor']} para acompañar tu proceso."
+        )
+    return jsonify(respuesta), 200
 
 @app.route("/inscripciones", methods=["GET"])
 def obtener_inscripciones_route():

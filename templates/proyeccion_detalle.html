@@ -229,6 +229,23 @@ nav {
     <h1>{{ nombre_materia }}</h1>
     <p>Proyección de mejora académica y actividades recomendadas</p>
   </div>
+   {% if profesor_asignado %}
+  <div class="card" style="border-left: 4px solid var(--border);">
+    <div class="section-title">Profesor de acompañamiento asignado</div>
+    <p style="margin-top: .6rem; font-size: 1.05rem; color: var(--text);">
+      Por estar en riesgo en esta materia, se te asignó a
+      <strong>{{ profesor_asignado.nombre }}</strong>
+      para acompañar tu proceso de mejora.
+    </p>
+    <p style="margin-top: .4rem; font-size: .85rem; color: var(--text-muted);">
+      Estado del seguimiento:
+      {% if profesor_asignado.estado == 'en_seguimiento' %}En seguimiento
+      {% elif profesor_asignado.estado == 'mejorado' %}Mejorado
+      {% else %}{{ profesor_asignado.estado }}{% endif %}
+      · Asignado el {{ profesor_asignado.fecha }}
+    </p>
+  </div>
+  {% endif %}
 
   {% if resultado %}
 
